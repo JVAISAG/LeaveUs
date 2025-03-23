@@ -3,6 +3,8 @@ import {
     useState
 } from "react"
 
+import axios from 'axios'
+
 import {
     useForm
 } from "react-hook-form"
@@ -27,7 +29,7 @@ import {
 } from "./components/form"
 import {
     Input
-} from "@/components/ui/input"
+} from "./components/input"
 import {
     Select,
     SelectContent,
@@ -72,15 +74,23 @@ export default function MyForm() {
             "LeavingDate": new Date(),
             "ReportingDate": new Date(),
             "Name": "",        //Name should be fetched from the database
-            "HostelName": ""   //same 
+            "HostelName": "",  //same 
+            "RollNumber": "",
+            "RoomNumber": "",
+            "LeaveType": "",
+            "Reason": ""
         },
     })
 
     //Logic not implemented
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            console.log(values);
-
+            // console.log("Submitted")
+            console.log(values)
+            const data = JSON.stringify(values)
+            const response = await axios.post('http://localhost:5000/api/leaveform', data, {
+                headers: { 'Content-Type': 'application/json' }
+            })
         } catch (error) {
             console.error("Form submission error", error);
 
@@ -94,7 +104,7 @@ export default function MyForm() {
 
                 <FormField
                     control={form.control}
-                    name="name_0687656778"
+                    name="HostelName"
                     render={({ field }) => (
                         <FormItem className="space-y-2 mb-6">
                             <FormLabel className="text-sm font-normal text-gray-700">Hostel Name</FormLabel>
@@ -114,7 +124,7 @@ export default function MyForm() {
 
                 <FormField
                     control={form.control}
-                    name="name_7781909581"
+                    name="LeaveType"
                     render={({ field }) => (
                         <FormItem className="space-y-2 mb-6">
                             <FormLabel className="text-sm font-normal text-gray-700">Type of Leave</FormLabel>
@@ -139,7 +149,7 @@ export default function MyForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <FormField
                         control={form.control}
-                        name="name_9926682353"
+                        name="LeavingDate"
                         render={({ field }) => (
                             <FormItem className="flex flex-col space-y-2">
                                 <FormLabel className="text-sm font-normal text-gray-700">Leaving Date</FormLabel>
@@ -180,7 +190,7 @@ export default function MyForm() {
 
                     <FormField
                         control={form.control}
-                        name="name_3457640419"
+                        name="ReportingDate"
                         render={({ field }) => (
                             <FormItem className="flex flex-col space-y-2">
                                 <FormLabel className="text-sm font-normal text-gray-700">Reporting Date</FormLabel>
@@ -222,7 +232,7 @@ export default function MyForm() {
 
                 <FormField
                     control={form.control}
-                    name="name_3137709696"
+                    name="Name"
                     render={({ field }) => (
                         <FormItem className="space-y-2 mb-6">
                             <FormLabel className="text-sm font-normal text-gray-700">Name</FormLabel>
@@ -243,7 +253,7 @@ export default function MyForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <FormField
                         control={form.control}
-                        name="name_5259927843"
+                        name="RollNumber"
                         render={({ field }) => (
                             <FormItem className="space-y-2">
                                 <FormLabel className="text-sm font-normal text-gray-700">Roll Number</FormLabel>
@@ -263,7 +273,7 @@ export default function MyForm() {
 
                     <FormField
                         control={form.control}
-                        name="name_4155716595"
+                        name="RoomNumber"
                         render={({ field }) => (
                             <FormItem className="space-y-2">
                                 <FormLabel className="text-sm font-normal text-gray-700">Room Number</FormLabel>
@@ -284,7 +294,7 @@ export default function MyForm() {
 
                 <FormField
                     control={form.control}
-                    name="name_4320622814"
+                    name="Reason"
                     render={({ field }) => (
                         <FormItem className="space-y-2 mb-8">
                             <FormLabel className="text-sm font-normal text-gray-700">Reason of Leave</FormLabel>

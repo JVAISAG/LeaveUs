@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-
+import axios from "axios";
+import bcrypt from 'bcryptjs'
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +18,7 @@ import {
 import { Input } from "./components/input";
 import { PasswordField } from "./components/password-input";
 
+
 const formSchema = z.object({
     email: z.string().min(1, "Username is required"),
     password: z.string().min(6, "Password must be at least 6 characters"),
@@ -31,10 +33,23 @@ export default function MyForm() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            console.log(values);
 
+
+
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            const email = values.email
+            const hashedPassword = bcrypt.hashSync(values.password, bcrypt.genSaltSync())
+            const response = await axios.post('http://localhost:5000/api/submit', {
+                "email": email,
+                "password": hashedPassword
+            }
+                , {
+                    headers: { "Content-Type": 'application/json' }
+                }
+            )
+            console.log(`${response.status},Login Succes`)
 
         } catch (error) {
             console.error("Form submission error", error);
