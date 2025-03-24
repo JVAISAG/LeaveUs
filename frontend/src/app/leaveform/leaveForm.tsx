@@ -49,7 +49,8 @@ import {
     Calendar
 } from "./components/calendar"
 import {
-    Calendar as CalendarIcon
+    Calendar as CalendarIcon,
+    ClipboardCheck
 } from "lucide-react"
 import {
     Textarea
@@ -67,6 +68,8 @@ const formSchema = z.object({
 });
 
 export default function MyForm() {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -82,236 +85,285 @@ export default function MyForm() {
         },
     })
 
-    //Logic not implemented
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            // console.log("Submitted")
+            setIsSubmitting(true);
             console.log(values)
             const data = JSON.stringify(values)
             const response = await axios.post('http://localhost:5000/api/leaveform', data, {
                 headers: { 'Content-Type': 'application/json' }
             })
+            setSubmitSuccess(true);
+            setTimeout(() => setSubmitSuccess(false), 3000);
         } catch (error) {
             console.error("Form submission error", error);
-
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-3xl mx-auto py-10 px-6 bg-white border border-gray-300 rounded-none shadow-sm">
-                <h2 className="text-2xl font-normal text-center text-gray-800 mb-8">Hostel Leave Application</h2>
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-3xl mx-auto py-8 px-6 md:px-10 bg-white border border-gray-200 rounded-lg shadow-md">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl font-semibold text-gray-800">Hostel Leave Application</h2>
+                        <p className="text-sm text-gray-500 mt-2">Fill in the details to submit your leave request</p>
+                    </div>
 
-                <FormField
-                    control={form.control}
-                    name="HostelName"
-                    render={({ field }) => (
-                        <FormItem className="space-y-2 mb-6">
-                            <FormLabel className="text-sm font-normal text-gray-700">Hostel Name</FormLabel>
-                            <FormControl>
-                                <Input
-                                    value={field.value ?? ""}
-                                    placeholder="Hostel Name"
-                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-none focus:border-gray-500 focus:outline-none focus:ring-0"
-                                    type="text"
-                                    {...field} />
-                            </FormControl>
-                            <FormDescription className="text-xs text-gray-500">Enter your Hostel Name</FormDescription>
-                            <FormMessage className="text-xs text-gray-700" />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={form.control}
-                    name="LeaveType"
-                    render={({ field }) => (
-                        <FormItem className="space-y-2 mb-6">
-                            <FormLabel className="text-sm font-normal text-gray-700">Type of Leave</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm shadow-none focus:border-gray-500 focus:outline-none focus:ring-0">
-                                        <SelectValue placeholder="Choose" className="text-gray-500" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-white border border-gray-300 shadow-sm rounded-none">
-                                    <SelectItem value="weekend" className="hover:bg-gray-50">General Leave</SelectItem>
-                                    <SelectItem value="vacation" className="hover:bg-gray-50">Medical Leave</SelectItem>
-                                    <SelectItem value="emergency" className="hover:bg-gray-50">Duty Leave</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormDescription className="text-xs text-gray-500">Enter your leave type here</FormDescription>
-                            <FormMessage className="text-xs text-gray-700" />
-                        </FormItem>
-                    )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <FormField
-                        control={form.control}
-                        name="LeavingDate"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col space-y-2">
-                                <FormLabel className="text-sm font-normal text-gray-700">Leaving Date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
+                    <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
+                                name="HostelName"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-2">
+                                        <FormLabel className="text-sm font-medium text-gray-700">Hostel Name</FormLabel>
                                         <FormControl>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full pl-3 text-left font-normal border border-gray-300 rounded-none hover:bg-gray-50 focus:border-gray-500 focus:ring-0",
-                                                    !field.value && "text-gray-500"
-                                                )}
-                                            >
-                                                {field.value ? (
-                                                    format(field.value, "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
+                                            <Input
+                                                value={field.value ?? ""}
+                                                placeholder="Enter hostel name"
+                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                type="text"
+                                                {...field} />
                                         </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-white border border-gray-300 shadow-sm rounded-none" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            onSelect={field.onChange}
-                                            initialFocus
-                                            className="rounded-none border-0"
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                                <FormDescription className="text-xs text-gray-500">Date of leaving hostel</FormDescription>
-                                <FormMessage className="text-xs text-gray-700" />
-                            </FormItem>
-                        )}
-                    />
+                                        <FormDescription className="text-xs text-gray-500">Your current hostel name</FormDescription>
+                                        <FormMessage className="text-xs text-red-500" />
+                                    </FormItem>
+                                )}
+                            />
 
-                    <FormField
-                        control={form.control}
-                        name="ReportingDate"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col space-y-2">
-                                <FormLabel className="text-sm font-normal text-gray-700">Reporting Date</FormLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
+                            <FormField
+                                control={form.control}
+                                name="LeaveType"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-2">
+                                        <FormLabel className="text-sm font-medium text-gray-700">Type of Leave</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                                                    <SelectValue placeholder="Select leave type" className="text-gray-500" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="bg-white border border-gray-200 shadow-md rounded-md">
+                                                <SelectItem value="general" className="hover:bg-gray-50">General Leave</SelectItem>
+                                                <SelectItem value="medical" className="hover:bg-gray-50">Medical Leave</SelectItem>
+                                                <SelectItem value="duty" className="hover:bg-gray-50">Duty Leave</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription className="text-xs text-gray-500">Select appropriate leave category</FormDescription>
+                                        <FormMessage className="text-xs text-red-500" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField
+                                control={form.control}
+                                name="LeavingDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col space-y-2">
+                                        <FormLabel className="text-sm font-medium text-gray-700">Leaving Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal border border-gray-300 rounded-md hover:bg-gray-50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+                                                            !field.value && "text-gray-500"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 text-gray-500" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-md rounded-md" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                    className="rounded-md border-0"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className="text-xs text-gray-500">When you'll leave the hostel</FormDescription>
+                                        <FormMessage className="text-xs text-red-500" />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="ReportingDate"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col space-y-2">
+                                        <FormLabel className="text-sm font-medium text-gray-700">Reporting Date</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal border border-gray-300 rounded-md hover:bg-gray-50 focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+                                                            !field.value && "text-gray-500"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 text-gray-500" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0 bg-white border border-gray-200 shadow-md rounded-md" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    initialFocus
+                                                    className="rounded-md border-0"
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className="text-xs text-gray-500">When you'll return to the hostel</FormDescription>
+                                        <FormMessage className="text-xs text-red-500" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="border-t border-gray-200 pt-6">
+                            <h3 className="text-md font-medium text-gray-700 mb-4">Personal Details</h3>
+
+                            <FormField
+                                control={form.control}
+                                name="Name"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-2 mb-6">
+                                        <FormLabel className="text-sm font-medium text-gray-700">Full Name</FormLabel>
                                         <FormControl>
-                                            <Button
-                                                variant={"outline"}
-                                                className={cn(
-                                                    "w-full pl-3 text-left font-normal border border-gray-300 rounded-none hover:bg-gray-50 focus:border-gray-500 focus:ring-0",
-                                                    !field.value && "text-gray-500"
-                                                )}
-                                            >
-                                                {field.value ? (
-                                                    format(field.value, "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                            </Button>
+                                            <Input
+                                                value={field.value ?? ""}
+                                                placeholder="Enter your full name"
+                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                type="text"
+                                                {...field} />
                                         </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0 bg-white border border-gray-300 shadow-sm rounded-none" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={field.value}
-                                            onSelect={field.onChange}
-                                            initialFocus
-                                            className="rounded-none border-0"
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                                <FormDescription className="text-xs text-gray-500">Date of return to hostel</FormDescription>
-                                <FormMessage className="text-xs text-gray-700" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+                                        <FormDescription className="text-xs text-gray-500">Your full name as per records</FormDescription>
+                                        <FormMessage className="text-xs text-red-500" />
+                                    </FormItem>
+                                )}
+                            />
 
-                <FormField
-                    control={form.control}
-                    name="Name"
-                    render={({ field }) => (
-                        <FormItem className="space-y-2 mb-6">
-                            <FormLabel className="text-sm font-normal text-gray-700">Name</FormLabel>
-                            <FormControl>
-                                <Input
-                                    value={field.value ?? ""}
-                                    placeholder="Enter your name"
-                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-none focus:border-gray-500 focus:outline-none focus:ring-0"
-                                    type="text"
-                                    {...field} />
-                            </FormControl>
-                            <FormDescription className="text-xs text-gray-500">Your Name</FormDescription>
-                            <FormMessage className="text-xs text-gray-700" />
-                        </FormItem>
-                    )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <FormField
-                        control={form.control}
-                        name="RollNumber"
-                        render={({ field }) => (
-                            <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-normal text-gray-700">Roll Number</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        value={field.value ?? ""}
-                                        placeholder="Roll Number"
-                                        className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-none focus:border-gray-500 focus:outline-none focus:ring-0"
-                                        type="text"
-                                        {...field} />
-                                </FormControl>
-                                <FormDescription className="text-xs text-gray-500">Your Roll Number</FormDescription>
-                                <FormMessage className="text-xs text-gray-700" />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="RoomNumber"
-                        render={({ field }) => (
-                            <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-normal text-gray-700">Room Number</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        value={field.value ?? ""}
-                                        placeholder="Room Number"
-                                        className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-none focus:border-gray-500 focus:outline-none focus:ring-0"
-                                        type="text"
-                                        {...field} />
-                                </FormControl>
-                                <FormDescription className="text-xs text-gray-500">Your allotted Room Number</FormDescription>
-                                <FormMessage className="text-xs text-gray-700" />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                <FormField
-                    control={form.control}
-                    name="Reason"
-                    render={({ field }) => (
-                        <FormItem className="space-y-2 mb-8">
-                            <FormLabel className="text-sm font-normal text-gray-700">Reason of Leave</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder="Reason..."
-                                    className="w-full rounded-none border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-none focus:border-gray-500 focus:outline-none focus:ring-0 resize-none min-h-[100px]"
-                                    {...field}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <FormField
+                                    control={form.control}
+                                    name="RollNumber"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel className="text-sm font-medium text-gray-700">Roll Number</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    value={field.value ?? ""}
+                                                    placeholder="Enter roll number"
+                                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                    type="text"
+                                                    {...field} />
+                                            </FormControl>
+                                            <FormDescription className="text-xs text-gray-500">Your institutional roll number</FormDescription>
+                                            <FormMessage className="text-xs text-red-500" />
+                                        </FormItem>
+                                    )}
                                 />
-                            </FormControl>
-                            <FormDescription className="text-xs text-gray-500">Enter your reason for leave</FormDescription>
-                            <FormMessage className="text-xs text-gray-700" />
-                        </FormItem>
-                    )}
-                />
-                <Button type="submit" className="w-full md:w-auto bg-white hover:bg-gray-50 text-gray-800 px-6 py-2 border border-gray-300 rounded-none shadow-none focus:outline-none focus:ring-0 transition-colors duration-200">Submit</Button>
-            </form>
-        </Form>
+
+                                <FormField
+                                    control={form.control}
+                                    name="RoomNumber"
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-2">
+                                            <FormLabel className="text-sm font-medium text-gray-700">Room Number</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    value={field.value ?? ""}
+                                                    placeholder="Enter room number"
+                                                    className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                    type="text"
+                                                    {...field} />
+                                            </FormControl>
+                                            <FormDescription className="text-xs text-gray-500">Your current room allocation</FormDescription>
+                                            <FormMessage className="text-xs text-red-500" />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        </div>
+
+                        <FormField
+                            control={form.control}
+                            name="Reason"
+                            render={({ field }) => (
+                                <FormItem className="space-y-2 mb-8">
+                                    <FormLabel className="text-sm font-medium text-gray-700">Reason for Leave</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Please provide details about your leave request..."
+                                            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none min-h-[120px]"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription className="text-xs text-gray-500">Be specific about your leave reason for faster approval</FormDescription>
+                                    <FormMessage className="text-xs text-red-500" />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 border-t border-gray-200">
+                            <p className="text-xs text-gray-500 mb-4 sm:mb-0">All fields marked are required for processing your request</p>
+                            <div className="flex space-x-4">
+                                <Button
+                                    type="button"
+                                    className="bg-white text-gray-700 px-5 py-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                                    onClick={() => form.reset()}
+                                >
+                                    Reset
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? (
+                                        <span className="flex items-center">
+                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Processing...
+                                        </span>
+                                    ) : submitSuccess ? (
+                                        <span className="flex items-center">
+                                            <ClipboardCheck className="mr-2 h-4 w-4" />
+                                            Submitted!
+                                        </span>
+                                    ) : (
+                                        <span>Submit Application</span>
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </Form>
+        </div>
     )
 }
