@@ -8,12 +8,12 @@ const studentSchema = new mongoose.Schema({
   parentPhone: { type: String, required: true },
   parentEmail: { type: String, required: true },
   contactNumber: { type: String, required: true },
+  HostelName : { type: String, required: true },
   facultyIncharge: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Faculty",
     required: true,
   },
-  wardens: [{ type: mongoose.Schema.Types.ObjectId, ref: "Faculty" }],
 });
 
 module.exports = mongoose.model("Student", studentSchema);

@@ -4,7 +4,7 @@ const facultySchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
-  role: { type: String, required: true, enum: ["Advisor", "HOD", "Warden"] },
+  isHOD: { type: Boolean, default: false }, // True if faculty is an HOD
+  department: { type: String, default: null }, // Only required if isHOD is true
 });
-
 module.exports = mongoose.model("Faculty", facultySchema);
