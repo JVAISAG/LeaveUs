@@ -10,6 +10,7 @@ import {
 } from "./form";
 import { Input } from "./input";
 import { createElement, useState } from "react";
+import { cn } from "@/lib/utils";
 
 type PasswordFieldProps = {
     name?: string;
@@ -38,7 +39,7 @@ export function PasswordField({
                                 type={passwordVisibility ? "text" : "password"}
                                 autoComplete="on"
                                 placeholder={placeholder}
-                                className={`pr-12 ${getFieldState(name).error && "text-destructive"}`}
+                                className={cn("pr-12" ,getFieldState(name)?.error && "border-red-500")}
                                 value={field.value ?? ""}
                             />
                             <Box

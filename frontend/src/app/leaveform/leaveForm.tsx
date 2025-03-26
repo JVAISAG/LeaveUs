@@ -1,5 +1,6 @@
 "use client"
 import {
+    useEffect,
     useState
 } from "react"
 
@@ -85,6 +86,18 @@ export default function MyForm() {
         },
     })
 
+    useEffect(()=>{
+        async function fetchData(){
+            const response = await axios.get('http://localhost:5000/api/leaveform')
+            console.log(response.data)
+            form.setValue("Name", response.data.Name)
+            form.setValue("HostelName", response.data.HostelName)
+            form.setValue("RollNumber", response.data.RollNumber)
+            form.setValue("RoomNumber", response.data.RoomNumber)
+        }
+        fetchData()
+    },[])
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             setIsSubmitting(true);
@@ -125,7 +138,9 @@ export default function MyForm() {
                                                 placeholder="Enter hostel name"
                                                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                 type="text"
-                                                {...field} />
+                                                {...field} 
+                                                disabled={true}
+                                                />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500">Your current hostel name</FormDescription>
                                         <FormMessage className="text-xs text-red-500" />
@@ -191,6 +206,7 @@ export default function MyForm() {
                                                     onSelect={field.onChange}
                                                     initialFocus
                                                     className="rounded-md border-0"
+                                                    fromDate={new Date()}
                                                 />
                                             </PopoverContent>
                                         </Popover>
@@ -257,7 +273,9 @@ export default function MyForm() {
                                                 placeholder="Enter your full name"
                                                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                 type="text"
-                                                {...field} />
+                                                {...field} 
+                                                disabled = {true}
+                                                />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500">Your full name as per records</FormDescription>
                                         <FormMessage className="text-xs text-red-500" />
@@ -278,7 +296,9 @@ export default function MyForm() {
                                                     placeholder="Enter roll number"
                                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                     type="text"
-                                                    {...field} />
+                                                    {...field} 
+                                                    disabled = {true}
+                                                    />
                                             </FormControl>
                                             <FormDescription className="text-xs text-gray-500">Your institutional roll number</FormDescription>
                                             <FormMessage className="text-xs text-red-500" />
@@ -298,7 +318,9 @@ export default function MyForm() {
                                                     placeholder="Enter room number"
                                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                     type="text"
-                                                    {...field} />
+                                                    {...field} 
+                                                    disabled = {true}
+                                                    />
                                             </FormControl>
                                             <FormDescription className="text-xs text-gray-500">Your current room allocation</FormDescription>
                                             <FormMessage className="text-xs text-red-500" />
@@ -338,10 +360,11 @@ export default function MyForm() {
                                     Reset
                                 </Button>
                                 <Button
-                                    type="submit"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
-                                    disabled={isSubmitting}
-                                >
+    type="submit"
+    className="bg-black hover:bg-gray-800 text-white px-5 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 flex items-center justify-center"
+    disabled={isSubmitting}
+>
+
                                     {isSubmitting ? (
                                         <span className="flex items-center">
                                             <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
