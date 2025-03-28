@@ -2,7 +2,7 @@
 node_modules/
 
 # Environment variables (Sensitive Information)
-config.env
+*.env
 
 
 # IDE and system files
