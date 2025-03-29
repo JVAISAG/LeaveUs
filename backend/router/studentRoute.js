@@ -29,7 +29,7 @@ router.get("/login", async (request, response) => {
     })
 
   } catch (error) {
-    console.log("Error occured at route GET /login", error.message);
+    console.log("Error occured at student route GET /login", error.message);
     return response.status(400).send('Something went wrong')
   }
 })
