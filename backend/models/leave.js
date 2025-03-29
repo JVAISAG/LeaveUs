@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
 const leaveSchema = new mongoose.Schema({
-  leaveId: { type: Number, required: true, unique: true },
   rollNo: { type: Number, required: true, ref: "Student" },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
+  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "Hostel" },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   reason: { type: String, required: true },
@@ -27,6 +28,8 @@ const leaveSchema = new mongoose.Schema({
     enum: ["Pending", "Approved", "Rejected"],
     default: "Pending",
   },
+
+  nextApproverRole: "Advisor",
 
   approvals: [
     {
