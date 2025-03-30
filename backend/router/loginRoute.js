@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Student = require("../models/student"); 
+const Student = require("../models/students"); 
 const Faculty = require("../models/faculty");  
 
 const router = express.Router();
