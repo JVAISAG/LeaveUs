@@ -3,7 +3,6 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/db");
-const studentRoute = require("./router/studentRoute.js")
 
 // Connect to Database
 connectDB();
@@ -15,7 +14,9 @@ app.get('/', async (request, response) => {
   return response.status(200).send("Backend is working!")
 })
 
-app.use('/student', studentRoute)
+app.use('/login', require('./router/loginRoute.js'));
+
+app.use('/student', require("./router/studentRoute.js"))
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
