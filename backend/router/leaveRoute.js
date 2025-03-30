@@ -142,3 +142,44 @@ router.post('/approve/:leaveId', async (request, response) => {
     return response.status(400).send("Something went wrong");
   }
 })
+
+router.get('/leaves/:facultyid', async (request, response) => {
+  try {
+    const { facultyid } = request.params;
+
+    // get the hostel of the faculty
+    const faculty = await Faculty.findById(facultyid);
+    if (!faculty) {
+      return response.status(404).json({ message: "Faculty not found" });
+    }
+
+    // take the leaves for the faculty who is the advisor to other students
+    const students = (await Student.find({
+      facultyAdvisor: facultyid,
+    })).map(student => student._id);
+
+
+
+    // hostel stores the various faculty in a list 
+    // check each hostel record to know which faculty is the warden of the hostel
+    const hostels = (await Hostel.find({
+      wardens: { $in: [wardenId] }
+    })).map(hostel => hostel._id);
+
+    if (hostels.length === 0) {
+      console.log("No hostels found for this faculty");
+    }
+
+    // for each hostel in the hostels list, get the array of leaves with the hostel id
+    const leaves = await Leave.find({
+      $or: [
+        { studentId: { $in: students } },
+        { hostelId: { $in: hostels } },
+      ]
+    });
+
+
+  } catch (error) {
+    
+  }
+});
