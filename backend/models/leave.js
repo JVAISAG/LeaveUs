@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const leaveSchema = new mongoose.Schema({
-  rollNo: { type: Number, required: true, ref: "Student" },
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "Student" },
-  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "Hostel" },
+  rollNo: { type: String, required: true, ref: "student" },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "student" },
+  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "hostel" },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   reason: { type: String, required: true },
@@ -50,4 +50,4 @@ const leaveSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("Leave", leaveSchema);
+module.exports = mongoose.model("leave", leaveSchema);
