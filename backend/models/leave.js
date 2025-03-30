@@ -50,4 +50,4 @@ const leaveSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("leave", leaveSchema);
+module.exports = mongoose.model("leaves", leaveSchema);
