@@ -21,5 +21,5 @@ const HostelSchema = new mongoose.Schema({
     }
 }, { timestamps: true });  
 
-const Hostel = mongoose.model("hostel", HostelSchema);
+const Hostel = mongoose.model("hostels", HostelSchema);
 module.exports = Hostel;
