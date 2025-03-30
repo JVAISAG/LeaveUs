@@ -7,4 +7,4 @@ const facultySchema = new mongoose.Schema({
   isHOD: { type: Boolean, default: false }, // True if faculty is an HOD
   department: { type: String, default: null }, // Only required if isHOD is true
 });
-module.exports = mongoose.model("Faculty", facultySchema);
+module.exports = mongoose.model("faculties", facultySchema);
