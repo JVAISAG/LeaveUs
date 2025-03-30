@@ -40,11 +40,13 @@ export default function MyForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const email = values.email
-            const hashedPassword = bcrypt.hashSync(values.password, bcrypt.genSaltSync())
-            const response = await axios.post('http://localhost:5000/api/submit', {
-                "email": email,
-                "password": hashedPassword
-            }
+            const password = values.password
+            const response = await axios.post('http://localhost:5000/login',JSON.stringify(
+                {
+                    email: email,
+                    password: password
+                }
+            )
                 , {
                     headers: { "Content-Type": 'application/json' }
                 }
