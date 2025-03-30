@@ -21,11 +21,13 @@ router.post("/", async (req, res) => {
         }
 
         if (!user) {
+            console.log(req.body)
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
+            console.log("is not a match")
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
