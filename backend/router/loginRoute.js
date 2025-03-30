@@ -6,7 +6,7 @@ const Faculty = require("../models/faculty");
 
 const router = express.Router();
 
-router.post("/login", async (req, res) => {
+router.post("/", async (req, res) => {
     try {
         const { email, password } = req.body;
         let user = null;
