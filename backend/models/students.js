@@ -13,4 +13,4 @@ const studentSchema = new mongoose.Schema({
   facultyAdvisor: { type: mongoose.Schema.Types.ObjectId, ref: "Faculty" },
 });
 
-module.exports = mongoose.model("Student", studentSchema);
+module.exports = mongoose.model("students", studentSchema);
