@@ -1,5 +1,6 @@
 const express = require("express");
 const Student = require("../models/students");
+const Leave = require('../models/leave');
 
 const router = express.Router();
 
@@ -48,7 +49,41 @@ router.get("/all", async (request, response) => {
       data: students,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log("Error at GET /student/all", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+});
+
+router.get('/:id', async (request, response) => {
+  try {
+    const student = await Student.findById(request.params.id);
+    if (!student) {
+      return response.status(404).json({ message: 'Student not found' });
+    }
+    return response.status(200).json(student);
+  } catch (error) {
+    return response.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+router.get('/:id/leaveforms', async (request, response) => {
+  try {
+    const { id } = request.params;
+
+    const student = Student.findById(id);
+    if (!student) {
+      return response.status(404).json({ message: "Student not found" });
+    }
+    
+    const leaves = await Leave.find({ studentId: id });
+    return response.status(200).json({
+      message: "Leaves fetched successfully",
+      leaves: leaves,
+    });
+
+  } catch (error) {
+    console.log("Error occurred at student route GET /leaves/:id", error.message);
+    return response.status(400).send("Something went wrong");
   }
 });
 
