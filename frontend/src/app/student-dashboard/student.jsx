@@ -29,7 +29,7 @@ const Dashboard = () => {
 
   const fetchLeaveRecords = async () => {
     try {
-      const response = await fetch("/leave-records");
+      const response = await fetch("/api/leave-records");
       if (!response.ok) throw new Error("Failed to fetch leave records");
 
       const data = await response.json();

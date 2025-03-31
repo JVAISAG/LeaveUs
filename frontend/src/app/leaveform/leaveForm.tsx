@@ -3,7 +3,7 @@ import {
     useEffect,
     useState
 } from "react"
-
+import { jwtDecode } from "jwt-decode"
 import axios from 'axios'
 
 import {
@@ -88,7 +88,7 @@ export default function MyForm() {
 
     useEffect(()=>{
         async function fetchData(){
-            const response = await axios.get('http://localhost:5000/api/leaveform')
+            const response = await axios.get('http://localhost:5000/fetchdata')
             console.log(response.data)
             form.setValue("Name", response.data.Name)
             form.setValue("HostelName", response.data.HostelName)
@@ -100,10 +100,24 @@ export default function MyForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            setIsSubmitting(true);
+            const response1 = await axios.get('http://localhost:5000/hostel/all')
+            console.log(response1)
+            setIsSubmitting(true); 
+            const token = localStorage.getItem('token')
+            const decodedToken = jwtDecode(token)
             console.log(values)
-            const data = JSON.stringify(values)
-            const response = await axios.post('http://localhost:5000/api/leaveform', data, {
+            const data = JSON.stringify({
+                rollNo : values.RollNumber,
+                studentId :  decodedToken.userId,
+                hostelId : "",
+                startDate : values.LeavingDate,
+                endDate : values.ReportingDate,
+                reason : values.Reason,
+                workingdays : values.ReportingDate.getDate() - values.LeavingDate.getDate(),
+                approvals : []
+
+            })
+            const response2 = await axios.post('http://localhost:5000/new', data, {
                 headers: { 'Content-Type': 'application/json' }
             })
             setSubmitSuccess(true);

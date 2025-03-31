@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import {jwtDecode }from 'jwt-decode'
+import { useRouter } from "next/navigation";
 import bcrypt from 'bcryptjs'
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +27,8 @@ const formSchema = z.object({
 });
 
 export default function MyForm() {
+    const [token,setToken] = useState('')
+    const [role,setRole] = useState('')
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -33,12 +37,16 @@ export default function MyForm() {
         },
     });
 
+    const axiosJwt = axios.create()
+    const router = useRouter()
+
 
 
 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+            
             const email = values.email
             const password = values.password
             const response = await axios.post('http://localhost:5000/login',JSON.stringify(
@@ -51,13 +59,51 @@ export default function MyForm() {
                     headers: { "Content-Type": 'application/json' }
                 }
             )
-            console.log(`${response.status},Login Succes`)
+           const Rectoken = response.data.token
+           setToken(Rectoken)
+           localStorage.setItem('token',Rectoken)
+           console.log(typeof Rectoken)
+           
 
         } catch (error) {
-            console.error("Form submission error", error);
+            Promise.reject(error)
 
         }
     }
+    useEffect(
+       ()=>{
+        const Auth = (token : string)=>{
+            try{
+                const decodedToken = jwtDecode(token)
+                console.log(decodedToken)
+               const userRole = decodedToken.role
+            const axiosIntercept = axios.interceptors.request.use(
+                (config : any)=>{
+                    config.headers['Authorization'] = `Bearer ${token}`
+                    return config
+                }
+            )
+            console.log(role)
+            if(userRole){
+                router.push(`/${userRole}-dashboard`)
+            }else{
+                router.push(`/login`)
+            }
+            return ()=>{axios.interceptors.request.eject(axiosIntercept)}
+            }
+            catch{
+                console.error('Token Decoding error')
+            }
+        }
+        if (token) {
+            Auth(token);
+        } else {
+            router.push('/login');
+        }
+       },[token]
+    )
+ 
+
 
     return (
         <div
