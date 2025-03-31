@@ -22,6 +22,7 @@ app.use('/login', require('./router/loginRoute.js'));
 app.use('/student', require("./router/studentRoute.js"))
 app.use('/leaveform', require("./router/leaveRoute.js"))
 app.use('/hostel', require("./router/hostelRoute.js"))
+app.use('/faculty', require("./router/facultyRoute.js"))
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
