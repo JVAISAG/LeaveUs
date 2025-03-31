@@ -9,21 +9,18 @@ const HostelSchema = new mongoose.Schema(
       trim: true,
     },
     wardens: [
-      {
-        warden: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: "faculties",
-        },
-        // required: true,
-      },
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "faculties",  
+            required: true
+        }
     ],
     chiefWarden: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-  },
-);
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "faculties",  
+        required: true
+    }
+}, { timestamps: true });  
 
-const Hostel = mongoose.model("hostels", HostelSchema);
+const Hostel = mongoose.model(hostels", HostelSchema);
 module.exports = Hostel;
