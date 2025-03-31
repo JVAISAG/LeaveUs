@@ -20,6 +20,7 @@ app.get('/', async (request, response) => {
 app.use('/login', require('./router/loginRoute.js'));
 
 app.use('/student', require("./router/studentRoute.js"))
+app.use('/leaveform', require("./router/leaveRoute.js"))
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

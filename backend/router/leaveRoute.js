@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Leave = require("../models/leave");
 const Faculty = require("../models/faculty");
 const Student = require("../models/students");
@@ -45,7 +46,13 @@ router.get("/", async (request, response) => {
 
 router.post("/new", async (request, response) => {
   try {
+
+    request.body.startDate = new Date(request.body.startDate);
+    request.body.endDate = new Date(request.body.endDate);
+    request.body.workingdays = Math.ceil((request.body.endDate - request.body.startDate) / (1000 * 60 * 60 * 24)) + 1;
+
     const leave = new Leave(request.body);
+
     await leave.save();
     return response.status(201).json({
       message: "Leave request created successfully",
@@ -183,3 +190,6 @@ router.get('/leaves/:facultyid', async (request, response) => {
     
   }
 });
+
+
+module.exports = router;
