@@ -185,9 +185,14 @@ router.get('/leaves/:facultyid', async (request, response) => {
       ]
     });
 
+    return response.status(200).json({
+      message: "Leaves fetched successfully",
+      leaves: leaves,
+    });
 
   } catch (error) {
-    
+    console.log("Error occurred at leave route GET /leaves/:facultyid", error.message);
+    return response.status(400).send("Something went wrong");
   }
 });
 
