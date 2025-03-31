@@ -170,7 +170,7 @@ router.get('/leaves/:facultyid', async (request, response) => {
     // hostel stores the various faculty in a list 
     // check each hostel record to know which faculty is the warden of the hostel
     const hostels = (await Hostel.find({
-      wardens: { $in: [wardenId] }
+      wardens: { $in: [facultyid] }
     })).map(hostel => hostel._id);
 
     if (hostels.length === 0) {
