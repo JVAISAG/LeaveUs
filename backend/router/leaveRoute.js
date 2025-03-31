@@ -183,3 +183,6 @@ router.get('/leaves/:facultyid', async (request, response) => {
     
   }
 });
+
+
+module.exports = router;

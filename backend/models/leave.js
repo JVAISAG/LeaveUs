@@ -1,13 +1,29 @@
 const mongoose = require("mongoose");
 
 const leaveSchema = new mongoose.Schema({
-  rollNo: { type: String, required: true, ref: "student" },
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "student" },
-  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "hostel" },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  reason: { type: String, required: true },
-  workingdays: { type: Number, required: true }, // User inputs number of working days
+  rollNo: { 
+    type: String, 
+    // required: true, 
+    ref: "students" 
+  },
+  studentId: { type: mongoose.Schema.Types.ObjectId, ref: "students" },
+  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "hostels" },
+  startDate: { 
+    type: Date, 
+    required: true 
+  },
+  endDate: { 
+    type: Date, 
+    required: true 
+  },
+  reason: { 
+    type: String, 
+    // required: true 
+  },
+  workingdays: { 
+    type: Number, 
+    required: true 
+  }, // User inputs number of working days
 
   status: {
     type: String,
@@ -29,11 +45,15 @@ const leaveSchema = new mongoose.Schema({
     default: "Pending",
   },
 
-  nextApproverRole: "Advisor",
+  nextApproverRole: {
+    type: String,
+    enum: ["Advisor", "Warden", "HOD", "Dean"],
+    default: "Advisor",
+  },
 
   approvals: [
     {
-      approverId: { type: mongoose.Schema.Types.ObjectId, ref: "Faculty" },
+      approverId: { type: mongoose.Schema.Types.ObjectId, ref: "faculties" },
       role: {
         type: String,
         enum: ["Advisor", "Warden", "HOD", "Dean"],
