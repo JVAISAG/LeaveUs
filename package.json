@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/ManishAnand05/LeaveUs/issues"
   },
-  "homepage": "https://github.com/ManishAnand05/LeaveUs#readme"
+  "homepage": "https://github.com/ManishAnand05/LeaveUs#readme",
+  "dependencies": {
+    "leaveus": "file:"
+  }
 }

@@ -1,113 +1,76 @@
-"use client";
-
-import { useRouter } from "next/router"; 
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from "@/components/ui/table";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { RefreshCw, LogOut } from "lucide-react";
 
-const Dashboard = () => {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [leaveRecords, setLeaveRecords] = useState([]);
-  const [loading, setLoading] = useState(true);
+const fetchLeaveRequests = async () => {
+  const response = await fetch("http://localhost:5000/api/leave-requests");
+  const data = await response.json();
+  return data;
+};
+
+export default function StudentDashboard() {
+  const [requests, setRequests] = useState([]);
+  const [studentData, setStudentData] = useState({ name: "", id: "", status: "" });
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login"); // Redirect to login page if not logged in
+    async function fetchData() {
+      const response = await fetch("http://localhost:5000/api/student-profile");
+      const student = await response.json();
+      setStudentData(student);
+      const leaveData = await fetchLeaveRequests();
+      setRequests(leaveData);
     }
-  }, [status, router]);
+    fetchData();
+  }, []);
 
-  useEffect(() => {
-    if (session) {
-      fetchLeaveRecords();
-    }
-  }, [session]);
-
-  const fetchLeaveRecords = async () => {
-    try {
-      const response = await fetch("/api/leave-records");
-      if (!response.ok) throw new Error("Failed to fetch leave records");
-
-      const data = await response.json();
-      setLeaveRecords(data);
-    } catch (error) {
-      console.error("Error fetching leave records:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (status === "loading" || loading) {
-    return <p>Loading...</p>;
-  }
-
-  return session ? (
-    <div className="min-h-screen bg-white p-4">
-      {/* Header Section */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <Avatar>
-            <AvatarFallback>C</AvatarFallback>
-          </Avatar>
-          <Card className="p-4">
-            <h2 className="font-semibold text-lg">{session.user?.name || "User"}</h2>
-            <p className="text-sm text-gray-500">{session.user?.id || "Unknown ID"}</p>
-            <Badge className="bg-gray-800 text-white">Active</Badge>
-          </Card>
+  return (
+    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <Card className="p-4 w-full md:w-fit">
+          <CardContent>
+            <h2 className="text-lg font-bold">{studentData.name}</h2>
+            <p className="text-sm text-gray-600">{studentData.id} <Badge>{studentData.status}</Badge></p>
+          </CardContent>
+        </Card>
+        <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+          <Button variant="outline" onClick={async () => setRequests(await fetchLeaveRequests())}>
+            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          </Button>
+          <Button>+ New Request</Button>
+          <Button variant="destructive">
+            <LogOut className="w-4 h-4 mr-2" /> Logout
+          </Button>
         </div>
-        <Button className="bg-red-500">Logout</Button>
       </div>
-
-      {/* Action Buttons */}
-      <div className="flex justify-between mt-6">
-        <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button>
-        <Button className="bg-black text-white">+ New Request</Button>
-      </div>
-
-      {/* Leave Table */}
-      <div className="mt-6">
-        <Table>
-          <TableHead>
+      <div className="overflow-x-auto">
+        <Table className="min-w-full">
+          <TableHeader>
             <TableRow>
-              <TableHeader>Date</TableHeader>
-              <TableHeader>Purpose</TableHeader>
-              <TableHeader>Time Out</TableHeader>
-              <TableHeader>Arrived Time</TableHeader>
-              <TableHeader>Status</TableHeader>             
+              <TableHead>Date</TableHead>
+              <TableHead>Purpose</TableHead>
+              <TableHead>Time Out</TableHead>
+              <TableHead>Arrived Time</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          </TableHead>
+          </TableHeader>
           <TableBody>
-            {leaveRecords.length > 0 ? (
-              leaveRecords.map((record, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-semibold">{new Date(record.date).toDateString()}</TableCell>
-                  <TableCell>{record.purpose}</TableCell>
-                  <TableCell>{record.time_out}</TableCell>
-                  <TableCell>{record.arrived_time}</TableCell>
-                  <TableCell>
-                    <Badge className={record.status === "Expired" ? "bg-red-500" : "bg-green-500"}>
-                      {record.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>...</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center">
-                  No leave records found.
-                </TableCell>
+            {requests.map((req, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-bold">{req.date}</TableCell>
+                <TableCell>{req.purpose}</TableCell>
+                <TableCell>{req.timeOut}</TableCell>
+                <TableCell>{req.arrived}</TableCell>
+                <TableCell><Badge variant="destructive">{req.status}</Badge></TableCell>
+                <TableCell>...</TableCell>
               </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
       </div>
     </div>
-  ) : null;
-};
-
-export default Dashboard;
+  );
+}
