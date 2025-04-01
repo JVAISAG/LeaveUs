@@ -86,22 +86,31 @@ export default function MyForm() {
         },
     })
 
-    useEffect(()=>{
-        async function fetchData(){
-            const response = await axios.get('http://localhost:5000/fetchdata')
-            console.log(response.data)
-            form.setValue("Name", response.data.Name)
-            form.setValue("HostelName", response.data.HostelName)
-            form.setValue("RollNumber", response.data.RollNumber)
-            form.setValue("RoomNumber", response.data.RoomNumber)
+    // useEffect(()=>{
+    //     async function fetchData(){
+    //         const response = await axios.get('http://localhost:5000/fetchdata')
+    //         console.log(response.data)
+    //         form.setValue("Name", response.data.Name)
+    //         form.setValue("HostelName", response.data.HostelName)
+    //         form.setValue("RollNumber", response.data.RollNumber)
+    //         form.setValue("RoomNumber", response.data.RoomNumber)
+    //     }
+    //     fetchData()
+    // },[])
+    const fetchData = async()=>{
+        try{
+            const response = await axios.get('http://localhost:5000/hostel/all')
+                console.log(response)
+                return response.data
         }
-        fetchData()
-    },[])
+        catch{
+            console.error("Not working")
+        }
+    }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response1 = await axios.get('http://localhost:5000/hostel/all')
-            console.log(response1)
+            const hostels = fetchData()
             setIsSubmitting(true); 
             const token = localStorage.getItem('token')
             const decodedToken = jwtDecode(token)
@@ -109,7 +118,7 @@ export default function MyForm() {
             const data = JSON.stringify({
                 rollNo : values.RollNumber,
                 studentId :  decodedToken.userId,
-                hostelId : "",
+                hostelId : hostels.__id,
                 startDate : values.LeavingDate,
                 endDate : values.ReportingDate,
                 reason : values.Reason,
@@ -117,7 +126,7 @@ export default function MyForm() {
                 approvals : []
 
             })
-            const response2 = await axios.post('http://localhost:5000/new', data, {
+            const response = await axios.post('http://localhost:5000/new', data, {
                 headers: { 'Content-Type': 'application/json' }
             })
             setSubmitSuccess(true);

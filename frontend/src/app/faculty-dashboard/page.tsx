@@ -1,9 +1,14 @@
-import React from 'react'
-import FacultyDashboard from '@/app/faculty_dash/faculty'
+"use client"
 
+import React from 'react'
+import FacultyDashboard from './faculty'
+import {Protected} from '../protected'
 const page = () => {
   return (
-    <FacultyDashboard/>
+    <Protected requiredRole = 'faculty'>
+       <FacultyDashboard/>
+    </Protected>
+   
   )
 }
 

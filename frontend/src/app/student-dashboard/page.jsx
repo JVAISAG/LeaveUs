@@ -1,9 +1,13 @@
+"use client"
 import React from 'react'
-import StudentDashboard from '@/app/dashboards/student'
+import StudentDashboard from './student'
+import { Protected } from '../protected'
 
 const page = () => {
   return (
-    <StudentDashboard/>
+    <Protected requiredRole>
+      <StudentDashboard/>
+    </Protected>
     
   )
 }
