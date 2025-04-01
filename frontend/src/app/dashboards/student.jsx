@@ -25,10 +25,17 @@ export default function StudentDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    (async () => {
+    const fetchStudentData = async () => {
       setStudentData(await fetchData("student-profile"));
+    };
+    fetchStudentData();
+  }, []);
+
+  useEffect(() => {
+    const fetchLeaveRequests = async () => {
       setRequests(await fetchData("leave-requests"));
-    })();
+    };
+    fetchLeaveRequests();
   }, []);
 
   return (
@@ -37,7 +44,10 @@ export default function StudentDashboard() {
         <Card className="p-4 w-full md:w-fit">
           <CardContent>
             <h2 className="text-lg font-bold">{studentData.name}</h2>
-            <p className="text-sm text-gray-600">{studentData.id} <Badge>{studentData.status}</Badge></p>
+            <p className="text-sm text-gray-600">
+              {studentData.id}{" "}
+              {studentData.status && <Badge>{studentData.status}</Badge>}
+            </p>
           </CardContent>
         </Card>
         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
@@ -45,46 +55,65 @@ export default function StudentDashboard() {
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
           <Button onClick={() => router.push("/new-request")}>+ New Request</Button>
-          <Button variant="destructive" onClick={() => router.push("/login")}> <LogOut className="w-4 h-4 mr-2" /> Logout </Button>
+          <Button variant="destructive" onClick={() => router.push("/login")}>
+            <LogOut className="w-4 h-4 mr-2" /> Logout
+          </Button>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <Table className="min-w-full">
           <TableHeader>
             <TableRow>
-              {['Date', 'Purpose', 'Time Out', 'Arrived Time', 'Status', 'Actions'].map((head, index) => (
+              {["Date", "Purpose", "Time Out", "Arrived Time", "Status", "Actions"].map((head, index) => (
                 <TableHead key={index}>{head}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {requests.length ? requests.map((req, index) => (
-              <TableRow key={index}>
-                {['date', 'purpose', 'timeOut', 'arrived'].map((field, i) => (
-                  <TableCell key={i}>{req[field]}</TableCell>
-                ))}
-                <TableCell><Badge variant="destructive">{req.status}</Badge></TableCell>
-                <TableCell>
-                  <Button size="sm" variant="outline" onClick={() => setSelectedRequest(req)}>View</Button>
-                </TableCell>
-              </TableRow>
-            )) : (
+            {requests.length ? (
+              requests.map((req, index) => (
+                <TableRow key={index}>
+                  {["date", "purpose", "timeOut", "arrived"].map((field, i) => (
+                    <TableCell key={i}>{req[field]}</TableCell>
+                  ))}
+                  <TableCell>
+                    <Badge
+                      variant={req.status === "Approved" ? "success" : req.status === "Pending" ? "warning" : "destructive"}
+                    >
+                      {req.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline" onClick={() => setSelectedRequest(req)}>
+                      View
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-gray-500">No leave requests found</TableCell>
+                <TableCell colSpan={6} className="text-center text-gray-500">
+                  No leave requests found
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Dialog Box */}
       {selectedRequest && (
-        <Dialog open={true} onOpenChange={() => setSelectedRequest(null)}>
+        <Dialog open={Boolean(selectedRequest)} onOpenChange={() => setSelectedRequest(null)}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Leave Request Details</DialogTitle>
             </DialogHeader>
             <div className="space-y-2">
-              {['date', 'purpose', 'timeOut', 'arrived', 'status'].map((field, i) => (
-                <p key={i}><strong>{field.replace(/([A-Z])/g, ' $1').toUpperCase()}:</strong> {selectedRequest[field]}</p>
+              {["date", "purpose", "timeOut", "arrived", "status"].map((field, i) => (
+                <p key={i}>
+                  <strong>{field.replace(/([A-Z])/g, " $1").toUpperCase()}:</strong> {selectedRequest[field]}
+                </p>
               ))}
             </div>
             <DialogClose asChild>
