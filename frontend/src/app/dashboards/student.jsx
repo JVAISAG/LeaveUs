@@ -4,26 +4,31 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, LogOut } from "lucide-react";
+import { useRouter } from "next/router";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
-const fetchLeaveRequests = async () => {
-  const response = await fetch("http://localhost:5000/api/leave-requests");
-  const data = await response.json();
-  return data;
+const fetchData = async (endpoint) => {
+  try {
+    const response = await fetch(`http://localhost:5000/api/${endpoint}`);
+    if (!response.ok) throw new Error(`Failed to fetch ${endpoint}`);
+    return await response.json();
+  } catch (error) {
+    console.error(`Error fetching ${endpoint}:`, error);
+    return endpoint === "leave-requests" ? [] : {};
+  }
 };
 
 export default function StudentDashboard() {
   const [requests, setRequests] = useState([]);
-  const [studentData, setStudentData] = useState({ name: "", id: "", status: "" });
+  const [studentData, setStudentData] = useState({});
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch("http://localhost:5000/api/student-profile");
-      const student = await response.json();
-      setStudentData(student);
-      const leaveData = await fetchLeaveRequests();
-      setRequests(leaveData);
-    }
-    fetchData();
+    (async () => {
+      setStudentData(await fetchData("student-profile"));
+      setRequests(await fetchData("leave-requests"));
+    })();
   }, []);
 
   return (
@@ -36,41 +41,58 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-          <Button variant="outline" onClick={async () => setRequests(await fetchLeaveRequests())}>
+          <Button variant="outline" onClick={async () => setRequests(await fetchData("leave-requests"))}>
             <RefreshCw className="w-4 h-4 mr-2" /> Refresh
           </Button>
-          <Button>+ New Request</Button>
-          <Button variant="destructive">
-            <LogOut className="w-4 h-4 mr-2" /> Logout
-          </Button>
+          <Button onClick={() => router.push("/new-request")}>+ New Request</Button>
+          <Button variant="destructive" onClick={() => router.push("/login")}> <LogOut className="w-4 h-4 mr-2" /> Logout </Button>
         </div>
       </div>
       <div className="overflow-x-auto">
         <Table className="min-w-full">
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Purpose</TableHead>
-              <TableHead>Time Out</TableHead>
-              <TableHead>Arrived Time</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
+              {['Date', 'Purpose', 'Time Out', 'Arrived Time', 'Status', 'Actions'].map((head, index) => (
+                <TableHead key={index}>{head}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {requests.map((req, index) => (
+            {requests.length ? requests.map((req, index) => (
               <TableRow key={index}>
-                <TableCell className="font-bold">{req.date}</TableCell>
-                <TableCell>{req.purpose}</TableCell>
-                <TableCell>{req.timeOut}</TableCell>
-                <TableCell>{req.arrived}</TableCell>
+                {['date', 'purpose', 'timeOut', 'arrived'].map((field, i) => (
+                  <TableCell key={i}>{req[field]}</TableCell>
+                ))}
                 <TableCell><Badge variant="destructive">{req.status}</Badge></TableCell>
-                <TableCell>...</TableCell>
+                <TableCell>
+                  <Button size="sm" variant="outline" onClick={() => setSelectedRequest(req)}>View</Button>
+                </TableCell>
               </TableRow>
-            ))}
+            )) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-gray-500">No leave requests found</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
+      {selectedRequest && (
+        <Dialog open={true} onOpenChange={() => setSelectedRequest(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Leave Request Details</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              {['date', 'purpose', 'timeOut', 'arrived', 'status'].map((field, i) => (
+                <p key={i}><strong>{field.replace(/([A-Z])/g, ' $1').toUpperCase()}:</strong> {selectedRequest[field]}</p>
+              ))}
+            </div>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
