@@ -20,6 +20,11 @@ const leaveSchema = new mongoose.Schema({
     type: String, 
     // required: true 
   },
+  leaveType: {
+    type: String,
+    enum: ["Medical", "General", "Duty"],
+    required: true
+  },
   workingdays: { 
     type: Number, 
     required: true 
