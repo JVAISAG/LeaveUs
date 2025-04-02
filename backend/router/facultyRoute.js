@@ -3,6 +3,7 @@ const Leave = require('../models/leave');
 const Student = require('../models/students');
 const Hostel = require('../models/hostel');
 const express = require('express');
+const { APPROVAL_STATUS } = require('../../constants/approvals');
 
 const router = express.Router();
 
@@ -65,10 +66,17 @@ router.get('/:id/leaveforms', async (request, response) => {
     // for each hostel in the hostels list, get the array of leaves with the hostel id
     const leaves = await Leave.find({
       $or: [
-        { studentId: { $in: students } },
-        { hostelId: { $in: hostels } },
+        { 
+          studentId: { $in: students } ,
+          status: APPROVAL_STATUS.PENDING
+        },
+        {
+          hostelId: { $in: hostels } ,
+          status: APPROVAL_STATUS.ADVISOR_APPROVED
+        },
       ]
     });
+
 
     return response.status(200).json({
       message: "Leaves fetched successfully",
