@@ -19,6 +19,7 @@ import {
 } from "@/app/login/components/form";
 import { Input } from "./components/input";
 import { PasswordField } from "./components/password-input";
+import { useAuth } from "../AuthProvider";
 
 
 const formSchema = z.object({
@@ -29,6 +30,7 @@ const formSchema = z.object({
 export default function MyForm() {
     const [token,setToken] = useState('')
     const [role,setRole] = useState('')
+    const {login} = useAuth()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -45,30 +47,7 @@ export default function MyForm() {
 
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        try {
-            
-            const email = values.email
-            const password = values.password
-            const response = await axios.post('http://localhost:5000/login',JSON.stringify(
-                {
-                    email: email,
-                    password: password
-                }
-            )
-                , {
-                    headers: { "Content-Type": 'application/json' }
-                }
-            )
-           const Rectoken = response.data.token
-           setToken(Rectoken)
-           localStorage.setItem('token',Rectoken)
-           console.log(typeof Rectoken)
-           
-
-        } catch (error) {
-            Promise.reject(error)
-
-        }
+        login(values)
     }
     useEffect(
        ()=>{

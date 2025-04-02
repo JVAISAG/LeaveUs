@@ -1,120 +1,142 @@
-"use client"
-
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
+"use client";
+import { useAuth } from "@/app/AuthProvider";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableHead, TableRow, TableCell, TableBody } from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { Protected } from "@/app/protected";
 
-export default function FacultyDashboard() {
-  const [faculty, setFaculty] = useState([]);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedFaculty, setSelectedFaculty] = useState(null);
-
+const FacultyDashboard = () => {
+  const { user, role, logout } = useAuth();
+  const router = useRouter();
+  const [leaveRecords, setLeaveRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+const [facultyName, setFacultyName] = useState('');
   useEffect(() => {
-    fetch("/api/faculty")
-      .then((res) => res.json())
-      .then((data) => setFaculty(data));
+    setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (mounted) {
+      fetchLeaveRecords();
+    }
+  }, [mounted]);
+
+  useEffect(()=>{
+    const fetchFacultyName = async ()=>{
+      const response = await fetch(`http://localhost:5000/faculty/${user}`)
+      const data = await response.json()
+      if(response.ok){
+        console.log('Data : ',data)}
+        setFacultyName(data.name)
+    }
+    fetchFacultyName()
+  },[])
+
+  const fetchLeaveRecords = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/faculty/${user}/leaveforms`);
+      if (!response.ok) throw new Error("Failed to fetch leave records");
+      const data = await response.json();
+      if (Array.isArray(data.leaves)) {
+        setLeaveRecords(data.leaves);
+      } else {
+        console.error("Invalid data format:", data);
+        setLeaveRecords([]);
+      }
+    } catch (error) {
+      console.error("Error fetching leave records:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDecision = async (id, decision) => {
+    try {
+      const response = await fetch(`http://localhost:5000/leaveform/${id}/approve`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          status: decision ,
+        facultyId : user }),
+      });
+      if (!response.ok) throw new Error("Failed to update leave record");
+      fetchLeaveRecords();
+    } catch (error) {
+      console.error("Error updating leave record:", error);
+    }
+  };
+
+  if (!mounted) {
+    return null;
+  }
+  console.log(leaveRecords)
   return (
-    <div className="p-6 space-y-6">
-      {/* Profile Card */}
-      <Card className="p-6 flex justify-between items-center shadow-md">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-lg font-semibold">C</div>
-          <div>
-            <h2 className="text-lg font-bold">bsp</h2>
-            <p className="text-sm text-gray-500">2020mec0014</p>
+    <Protected requiredRole="faculty">
+      <div className="min-h-screen bg-white p-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Avatar>
+              <AvatarFallback>{user && user.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <Card className="p-4">
+              <h2 className="font-semibold text-lg">{facultyName || "User"}</h2>
+              <p className="text-sm text-gray-500">{role || "Unknown Role"}</p>
+              <Badge className="bg-gray-800 text-white">Active</Badge>
+            </Card>
           </div>
+          <Button className="bg-red-500" onClick={logout}>Logout</Button>
         </div>
-      </Card>
-
-      {/* Refresh Button */}
-      <Button variant="outline" className="mb-4" onClick={() => window.location.reload()}>🔄 Refresh</Button>
-
-      {/* Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow-md p-4">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Department</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {faculty.slice(0, rowsPerPage).map((prof) => (
-              <TableRow key={prof.id}>
-                <TableCell>{prof.id}</TableCell>
-                <TableCell>{prof.name}</TableCell>
-                <TableCell>{prof.department}</TableCell>
-                <TableCell>
-                  <Badge
-                    className={
-                      prof.status === "Active"
-                        ? "bg-green-500"
-                        : prof.status === "On Leave"
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
-                    }
-                  >
-                    {prof.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" onClick={() => setSelectedFaculty(prof)}>...</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      {selectedFaculty && (
-                        <div className="p-4 space-y-4">
-                          <h2 className="text-lg font-semibold">Leave Form</h2>
-                          <p><strong>Name:</strong> {selectedFaculty.name}</p>
-                          <p><strong>Purpose:</strong> {selectedFaculty.purpose}</p>
-                          <p><strong>Place:</strong> {selectedFaculty.place}</p>
-                          <p><strong>Hostel Name:</strong> {selectedFaculty.hostel}</p>
-                          <p><strong>Mobile:</strong> {selectedFaculty.mobile}</p>
-                          <p><strong>Created At:</strong> {selectedFaculty.createdAt}</p>
-                          <p><strong>Start Date:</strong> {selectedFaculty.startDate}</p>
-                          <p><strong>Time In:</strong> {selectedFaculty.timeIn}</p>
-                          <p><strong>Arrived Time:</strong> {selectedFaculty.arrivedTime}</p>
-                          <p><strong>Parent's Contact Info:</strong> {selectedFaculty.parentContact}</p>
-                          <textarea className="w-full p-2 border rounded" placeholder="Remarks"></textarea>
-                          <div className="flex justify-between">
-                            <Button variant="outline">Accept</Button>
-                            <Button variant="destructive">Reject</Button>
-                          </div>
-                        </div>
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
+        <div className="flex justify-between mt-6">
+          <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button>
+        </div>
+        <div className="mt-6">
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-bold">Start Date</TableCell>
+                <TableCell className="font-bold">Leave Type</TableCell>
+                <TableCell className="font-bold">End Date</TableCell>
+                <TableCell className="font-bold">Status</TableCell>
+                {/* <TableCell className="font-bold">Remarks</TableCell> */}
+                <TableCell className="font-bold">Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              {leaveRecords.map((record, index) => (
+                <TableRow key={index}>
+                  <TableCell>{new Date(record.startDate).toDateString()}</TableCell>
+                  <TableCell>{record.leaveType || "N/A"}</TableCell>
+                  <TableCell>{new Date(record.endDate).toDateString()}</TableCell>
+                  <TableCell>
+                    <Badge className={record.status === "Expired" ? "bg-red-500" : "bg-green-500"}>
+                      {record.status}
+                    </Badge>
+                  </TableCell>
+                  {/* <TableCell>
+                    <input type="text" className="border p-1 w-full" placeholder="Add remarks" />
+                  </TableCell> */}
+                  <TableCell>
+                    <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "Accepted")}>
+                      Accept
+                    </Button>
+                    <Button className="bg-red-500 text-white" onClick={() => handleDecision(record._id, "Rejected")}>
+                      Reject
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <Select value={rowsPerPage.toString()} onValueChange={(value) => setRowsPerPage(parseInt(value))}>
-          <SelectTrigger className="w-24">
-            <SelectValue placeholder="Rows per page" />
-          </SelectTrigger>
-          <SelectContent className={undefined}>
-            <SelectItem value="10" className={undefined} children={undefined}>10</SelectItem>
-            <SelectItem value="20" className={undefined} children={undefined}>20</SelectItem>
-            <SelectItem value="50" className={undefined} children={undefined}>50</SelectItem>
-          </SelectContent>
-        </Select>
-        <p className="text-sm text-gray-500">Page 1 of 1</p>
-      </div>
-    </div>
+    </Protected>
   );
-}
+ 
+};
+
+export default FacultyDashboard;
