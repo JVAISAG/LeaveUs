@@ -68,6 +68,15 @@ router.post("/new", async (request, response) => {
     request.body.endDate = new Date(request.body.endDate);
     request.body.workingdays = Math.ceil((request.body.endDate - request.body.startDate) / (1000 * 60 * 60 * 24)) + 1;
 
+    // const hostelname = request.body.hostelName;
+
+    // const hostel = await Hostel.findOne({ name: hostelname });
+    // if (!hostel) {
+    //   return response.status(404).json({ message: "Hostel not found" });
+    // }
+
+    // request.body.hostelName = hostel._id;
+
     const leave = new Leave(request.body);
 
     await leave.save();
