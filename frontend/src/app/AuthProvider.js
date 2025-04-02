@@ -67,6 +67,7 @@ try{
       localStorage.setItem("token", Rectoken);
       setToken(Rectoken);
       const role = decodedToken.role;
+      setRole(role);
     //   console.log(typeof Rectoken);
       router.push(`${role}-dashboard`);
     
