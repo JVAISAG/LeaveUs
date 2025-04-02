@@ -162,4 +162,47 @@ router.post('/:id/approve', async (request, response) => {
 });
 
 
+router.post('/:id/reject', async (request, response) => {
+  try {
+    const { id } = request.params;
+    let { status, facultyId } = request.body;
+
+    facultyId = mongoose.Types.ObjectId.createFromHexString(facultyId);
+
+    if (status === STATUS.APPROVED) {
+      return response.status(400).json({ message: "Using /reject for approving application. Use /approve instead." });
+    }
+
+    const leave = await Leave.findById(id);
+    if (!leave) {
+      return response.status(404).json({ message: "Leave not found" });
+    }
+
+    if (leave.finalApproval !== STATUS.PENDING) {
+      return response.status(400).json({ message: "Leave request already processed" });
+    }
+
+    await Leave.updateOne(
+      { _id: leave._id },
+      {
+        $set: {
+          status: APPROVAL_STATUS.REJECTED,
+          finalApproval: STATUS.REJECTED,
+          nextApproverRole: null,
+        },
+      }
+    );
+
+    return response.status(200).json({
+      message: "Leave rejected successfully",
+      leave: leave,
+    });
+  } catch (error) {
+    console.log("Error occurred at leave route POST leaveform/:id/reject", error.message);
+    return response.status(400).send("Something went wrong");
+    
+  }
+});
+
+
 module.exports = router;

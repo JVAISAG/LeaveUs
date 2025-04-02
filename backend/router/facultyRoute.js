@@ -74,6 +74,9 @@ router.get('/:id/leaveforms', async (request, response) => {
           hostelId: { $in: hostels } ,
           status: APPROVAL_STATUS.ADVISOR_APPROVED
         },
+        {
+          status: APPROVAL_STATUS.REJECTED
+        }
       ]
     });
 
