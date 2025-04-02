@@ -57,7 +57,7 @@ const [facultyName, setFacultyName] = useState('');
 
   const handleDecision = async (id, decision) => {
     try {
-      const response = await fetch(`http://localhost:5000/leaveform/${id}/approve`, {
+      const response = await fetch(`http://localhost:5000/leaveform/${id}/${decision}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const [facultyName, setFacultyName] = useState('');
           <Button className="bg-red-500" onClick={logout}>Logout</Button>
         </div>
         <div className="flex justify-between mt-6">
-          <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button>
+          {/* <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button> */}
         </div>
         <div className="mt-6">
           <Table>
@@ -113,7 +113,7 @@ const [facultyName, setFacultyName] = useState('');
                   <TableCell>{record.leaveType || "N/A"}</TableCell>
                   <TableCell>{new Date(record.endDate).toDateString()}</TableCell>
                   <TableCell>
-                    <Badge className={record.status === "Expired" ? "bg-red-500" : "bg-green-500"}>
+                    <Badge className={record.status === "Rejected" ? "bg-red-500" : "bg-green-500"}>
                       {record.status}
                     </Badge>
                   </TableCell>
@@ -121,10 +121,10 @@ const [facultyName, setFacultyName] = useState('');
                     <input type="text" className="border p-1 w-full" placeholder="Add remarks" />
                   </TableCell> */}
                   <TableCell>
-                    <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "Accepted")}>
+                    <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "approve")}>
                       Accept
                     </Button>
-                    <Button className="bg-red-500 text-white" onClick={() => handleDecision(record._id, "Rejected")}>
+                    <Button className="bg-red-500 text-white" onClick={() => handleDecision(record._id, "reject")}>
                       Reject
                     </Button>
                   </TableCell>
