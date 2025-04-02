@@ -22,7 +22,7 @@ const leaveSchema = new mongoose.Schema({
   },
   leaveType: {
     type: String,
-    enum: ["Medical", "General", "Duty"],
+    enum: ["medical", "general", "duty"],
     required: true
   },
   workingdays: { 

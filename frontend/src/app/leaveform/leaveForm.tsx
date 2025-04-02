@@ -110,7 +110,7 @@ export default function MyForm() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const hostels = fetchData()
+            // const hostels = fetchData()
             setIsSubmitting(true); 
             const token = localStorage.getItem('token')
             const decodedToken = jwtDecode(token)
@@ -118,15 +118,16 @@ export default function MyForm() {
             const data = JSON.stringify({
                 rollNo : values.RollNumber,
                 studentId :  decodedToken.userId,
-                hostelId : hostels.__id,
+                hostelId : '67eb828f653f4a5a3872e10c',
                 startDate : values.LeavingDate,
                 endDate : values.ReportingDate,
                 reason : values.Reason,
-                workingdays : values.ReportingDate.getDate() - values.LeavingDate.getDate(),
+                leaveType : values.LeaveType,
+                workingdays : '',
                 approvals : []
 
             })
-            const response = await axios.post('http://localhost:5000/new', data, {
+            const response = await axios.post('http://localhost:5000/leaveform/new', data, {
                 headers: { 'Content-Type': 'application/json' }
             })
             setSubmitSuccess(true);
@@ -162,7 +163,6 @@ export default function MyForm() {
                                                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                 type="text"
                                                 {...field} 
-                                                disabled={true}
                                                 />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500">Your current hostel name</FormDescription>
@@ -297,7 +297,7 @@ export default function MyForm() {
                                                 className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                 type="text"
                                                 {...field} 
-                                                disabled = {true}
+                                                
                                                 />
                                         </FormControl>
                                         <FormDescription className="text-xs text-gray-500">Your full name as per records</FormDescription>
@@ -320,7 +320,7 @@ export default function MyForm() {
                                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                     type="text"
                                                     {...field} 
-                                                    disabled = {true}
+                                                  
                                                     />
                                             </FormControl>
                                             <FormDescription className="text-xs text-gray-500">Your institutional roll number</FormDescription>
@@ -342,7 +342,7 @@ export default function MyForm() {
                                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                                                     type="text"
                                                     {...field} 
-                                                    disabled = {true}
+                                                    
                                                     />
                                             </FormControl>
                                             <FormDescription className="text-xs text-gray-500">Your current room allocation</FormDescription>

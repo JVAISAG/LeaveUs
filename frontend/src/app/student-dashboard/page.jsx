@@ -2,13 +2,15 @@
 import React from 'react'
 import StudentDashboard from './student'
 import { Protected } from '../protected'
+// import { SessionProvider } from 'next-auth/react'
 
 const page = () => {
   return (
-    <Protected requiredRole>
+    
+    <Protected requiredRole='student'>
       <StudentDashboard/>
     </Protected>
-    
+   
   )
 }
 
