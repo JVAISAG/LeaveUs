@@ -11,6 +11,7 @@ import { SessionProvider } from "next-auth/react";
 // }
 
 import { AuthProvider } from "./AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
         {children}
         </AuthProvider>
+        <Toaster richColors/>
       </body>
     </html>
   );
