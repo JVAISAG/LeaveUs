@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const leaveSchema = new mongoose.Schema({
-  rollNo: { 
-    type: String, 
-    // required: true, 
-    //ref: "students" 
-  },
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: "students" },
   hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "hostels" },
   startDate: { 
