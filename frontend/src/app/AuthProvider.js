@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const email = values.email;
       const password = values.password;
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:5000/login",
         JSON.stringify({
           email: email,
