@@ -68,6 +68,8 @@ const leaveSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
+
+  ReasonFA : {type: String, default: "No Reason Provided"},
 });
 
 module.exports = mongoose.model("leaves", leaveSchema);
