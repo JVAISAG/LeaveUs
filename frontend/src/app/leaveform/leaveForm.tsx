@@ -75,8 +75,8 @@ export default function MyForm() {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            "LeavingDate": new Date(),
-            "ReportingDate": new Date(),
+            "LeavingDate": null,
+            "ReportingDate": null,
             "Name": "",        //Name should be fetched from the database
             "HostelName": "",  //same 
             "RollNumber": "",

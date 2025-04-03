@@ -462,6 +462,7 @@ const StudentDashboard = () => {
           <Table>
             <TableBody>
               <TableRow>
+                <TableCell className="font-bold">Roll Number</TableCell>
                 <TableCell className="font-bold">Start Date</TableCell>
                 <TableCell className="font-bold">Leave Type</TableCell>
                 <TableCell className="font-bold">End Date</TableCell>
@@ -469,11 +470,12 @@ const StudentDashboard = () => {
               </TableRow>
               {leaveRecords.map((record, index) => (
                 <TableRow key={index}>
+                  <TableCell>{record.rollNo}</TableCell>
                   <TableCell>{new Date(record.startDate).toDateString()}</TableCell>
                   <TableCell>{record.leaveType || "N/A"}</TableCell>
                   <TableCell>{new Date(record.endDate).toDateString()}</TableCell>
                   <TableCell>
-                    <Badge className={record.status === "Expired" ? "bg-red-500" : "bg-green-500"}>
+                    <Badge className={record.status === "Rejected" ? "bg-red-500" : "bg-green-500"}>
                       {record.status}
                     </Badge>
                   </TableCell>

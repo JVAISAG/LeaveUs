@@ -57,7 +57,7 @@ const [facultyName, setFacultyName] = useState('');
 
   const handleDecision = async (id, decision) => {
     try {
-      const response = await fetch(`http://localhost:5000/leaveform/${id}/approve`, {
+      const response = await fetch(`http://localhost:5000/leaveform/${id}/${decision}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,9 +82,6 @@ const [facultyName, setFacultyName] = useState('');
       <div className="min-h-screen bg-white p-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <Avatar>
-              <AvatarFallback>{user && user.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
             <Card className="p-4">
               <h2 className="font-semibold text-lg">{facultyName || "User"}</h2>
               <p className="text-sm text-gray-500">{role || "Unknown Role"}</p>
@@ -94,39 +91,47 @@ const [facultyName, setFacultyName] = useState('');
           <Button className="bg-red-500" onClick={logout}>Logout</Button>
         </div>
         <div className="flex justify-between mt-6">
-          <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button>
+          {/* <Button variant="outline" onClick={fetchLeaveRecords}>🔄 Refresh</Button> */}
         </div>
         <div className="mt-6">
           <Table>
             <TableBody>
               <TableRow>
+                <TableCell className="font-bold">Roll Number</TableCell>
                 <TableCell className="font-bold">Start Date</TableCell>
                 <TableCell className="font-bold">Leave Type</TableCell>
                 <TableCell className="font-bold">End Date</TableCell>
                 <TableCell className="font-bold">Status</TableCell>
-                {/* <TableCell className="font-bold">Remarks</TableCell> */}
+                <TableCell className="font-bold">Purpose</TableCell>
                 <TableCell className="font-bold">Actions</TableCell>
               </TableRow>
               {leaveRecords.map((record, index) => (
                 <TableRow key={index}>
+                  <TableCell>{record.rollNo}</TableCell>
                   <TableCell>{new Date(record.startDate).toDateString()}</TableCell>
                   <TableCell>{record.leaveType || "N/A"}</TableCell>
                   <TableCell>{new Date(record.endDate).toDateString()}</TableCell>
                   <TableCell>
-                    <Badge className={record.status === "Expired" ? "bg-red-500" : "bg-green-500"}>
+                    <Badge className={record.status === "Rejected" ? "bg-red-500" : "bg-green-500"}>
                       {record.status}
                     </Badge>
                   </TableCell>
-                  {/* <TableCell>
-                    <input type="text" className="border p-1 w-full" placeholder="Add remarks" />
-                  </TableCell> */}
                   <TableCell>
-                    <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "Accepted")}>
-                      Accept
-                    </Button>
-                    <Button className="bg-red-500 text-white" onClick={() => handleDecision(record._id, "Rejected")}>
-                      Reject
-                    </Button>
+                    {record.reason}
+                  </TableCell>
+                  <TableCell>
+                    {record.status == 'Rejected' ? (
+                      <div>
+                        Already Rejected
+                      </div>
+                    ) : (<div>
+                      <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "approve")}>
+                        Accept
+                      </Button>
+                      <Button className="bg-red-500 text-white" onClick={() => handleDecision(record._id, "reject")}>
+                        Reject
+                      </Button>
+                    </div>)}
                   </TableCell>
                 </TableRow>
               ))}
