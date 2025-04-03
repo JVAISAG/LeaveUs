@@ -48,7 +48,7 @@ import {
 } from "./components/popover"
 import {
     Calendar
-} from "./components/calendar"
+} from "../../components/ui/calendar"
 import {
     Calendar as CalendarIcon,
     ClipboardCheck
