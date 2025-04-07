@@ -160,6 +160,21 @@ router.post('/:id/approve', async (request, response) => {
     return response.status(400).send("Something went wrong");
   }
 });
+router.get("/all", async (request, response) => {
+  try {
+    const leaves = await Leave.find({});
+    console.log("getting all leaves");
+    console.log(leaves);
+    return response.status(200).json({
+      count: leaves.count,
+      data: leaves,
+    });
+  } catch (error) {
+    console.log("Error at GET /leaveform/all", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+});
+
 
 
 router.post('/:id/reject', async (request, response) => {

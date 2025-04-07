@@ -66,18 +66,20 @@ const StudentDashboard = () => {
   const router = useRouter();
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hostelName,setHostelName] = useState()
   const [mounted, setMounted] = useState(false);
   const [studentName, setStudentName] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
+
   // Initialize form
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      "LeavingDate": new Date(),
-      "ReportingDate": new Date(),
+      "LeavingDate": new Date().toLocaleString(),
+      "ReportingDate": new Date().toLocaleString(),
       "Name": "",
       "HostelName": "",
       "RollNumber": "",
@@ -95,21 +97,43 @@ const StudentDashboard = () => {
     if (mounted) {
       fetchLeaveRecords();
       fetchStudentDetails();
+      
     }
   }, [mounted, user]);
+  function findHostelNameById(hostels, targetId) {
+    const hostel = hostels.filter(hostel => hostel._id === targetId)[0];
+    console.log("hostel", hostel);
+    return hostel ? hostel.name : null;
+  }
 
+  const fetchHostelDetails = async (id) =>{
+    try{
+      const res = await axios.get('http://localhost:5000/hostel/all');
+      console.log(res.data)
+      const hostel = findHostelNameById(res.data,id)
+      console.log("data : ",res.data)
+      return hostel;
+    }
+    catch(error){
+      console.log("Error fetching hostel data ",error)
+    }
+  }
   const fetchStudentDetails = async () => {
     try {
       const response = await fetch(`http://localhost:5000/student/${user}`);
       if (!response.ok) throw new Error("Failed to fetch student details");
       const data = await response.json();
       setStudentName(data.name);
-      
+
+     const hostel =  await fetchHostelDetails(data.hostelId);
+    //  console.log("hostel",hostel)
+     setHostelName(hostel)
+
       // Pre-fill form with student details
       form.setValue("Name", data.name || "");
-      form.setValue("RollNumber", data.rollNumber || "");
-      form.setValue("HostelName", data.hostelName || "");
-      form.setValue("RoomNumber", data.roomNumber || "");
+      form.setValue("RollNumber", data.rollNo || "");
+      form.setValue("HostelName", hostelName || "");
+      form.setValue("RoomNumber", data.RoomNo || "");
     } catch (error) {
       console.error("Error fetching student details:", error);
     }
