@@ -57,10 +57,20 @@ router.post("/new", async (request, response) => {
   try {
     request.body.startDate = new Date(request.body.startDate);
     request.body.endDate = new Date(request.body.endDate);
-    request.body.workingdays =
-      Math.ceil(
-        (request.body.endDate - request.body.startDate) / (1000 * 60 * 60 * 24)
-      ) + 1;
+
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+    let workingDays = 0;
+
+    while (start <= end) {
+        let day = start.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+        if (day !== 0 && day !== 6) { // Exclude Sundays (0) and Saturdays (6)
+            workingDays++;
+        }
+        start.setDate(start.getDate() + 1); // Move to the next day
+    }
+
+    request.body.workingdays = workingDays;
 
     // const hostelname = request.body.hostelName;
 
@@ -83,6 +93,42 @@ router.post("/new", async (request, response) => {
     return response.status(400).send("Something went wrong");
   }
 });
+
+
+router.get("/all", async (request, response) => {
+  try {
+    // const leaves = await Leave.find({});
+    const leaves = await Leave.aggregate([
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student",
+        },
+      },
+      {
+        $unwind: "$student",
+      },
+      {
+        $project: {
+          "student.passwordHash": 0,
+          __v: 0,
+        }
+      }
+    ])
+    console.log("getting all leaves");
+    console.log(leaves);
+    return response.status(200).json({
+      count: leaves.length,
+      data: leaves,
+    });
+  } catch (error) {
+    console.log("Error at GET /leaveform/all", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+});
+
 
 router.post("/:id/approve", async (request, response) => {
   try {
