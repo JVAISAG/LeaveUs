@@ -66,7 +66,7 @@ const StudentDashboard = () => {
   const router = useRouter();
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hostelName,setHostelName] = useState()
+  const [hostelName, setHostelName] = useState("")
   const [mounted, setMounted] = useState(false);
   const [studentName, setStudentName] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -78,8 +78,8 @@ const StudentDashboard = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      "LeavingDate": new Date().toLocaleString(),
-      "ReportingDate": new Date().toLocaleString(),
+      "LeavingDate": new Date(),
+      "ReportingDate": new Date(),
       "Name": "",
       "HostelName": "",
       "RollNumber": "",
@@ -97,12 +97,12 @@ const StudentDashboard = () => {
     if (mounted) {
       fetchLeaveRecords();
       fetchStudentDetails();
-      
     }
   }, [mounted, user]);
+
   function findHostelNameById(hostels, targetId) {
     const hostel = hostels.filter(hostel => hostel._id === targetId)[0];
-    console.log("hostel", hostel);
+    // console.log("hostel", hostel);
     return hostel ? hostel.name : null;
   }
 
@@ -111,13 +111,15 @@ const StudentDashboard = () => {
       const res = await axios.get('http://localhost:5000/hostel/all');
       console.log(res.data)
       const hostel = findHostelNameById(res.data,id)
-      console.log("data : ",res.data)
+      // console.log("data : ", res.data)
+      // console.log("hostel id: ", id)
       return hostel;
     }
     catch(error){
       console.log("Error fetching hostel data ",error)
     }
   }
+
   const fetchStudentDetails = async () => {
     try {
       const response = await fetch(`http://localhost:5000/student/${user}`);
@@ -125,14 +127,15 @@ const StudentDashboard = () => {
       const data = await response.json();
       setStudentName(data.name);
 
-     const hostel =  await fetchHostelDetails(data.hostelId);
-    //  console.log("hostel",hostel)
-     setHostelName(hostel)
+      const hostel =  await fetchHostelDetails(data.hostelId);
+      //  console.log("hostel",hostel)
+      setHostelName(hostel)
 
       // Pre-fill form with student details
+      console.log("hostel name: ", hostelName)
       form.setValue("Name", data.name || "");
       form.setValue("RollNumber", data.rollNo || "");
-      form.setValue("HostelName", hostelName || "");
+      form.setValue("HostelName", hostel || "");
       form.setValue("RoomNumber", data.RoomNo || "");
     } catch (error) {
       console.error("Error fetching student details:", error);
@@ -232,6 +235,7 @@ const StudentDashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
+                      disabled
                       name="HostelName"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
@@ -363,6 +367,7 @@ const StudentDashboard = () => {
                     <FormField
                       control={form.control}
                       name="Name"
+                      disabled
                       render={({ field }) => (
                         <FormItem className="space-y-2 mb-6">
                           <FormLabel className="text-sm font-medium text-gray-700">Full Name</FormLabel>
@@ -384,6 +389,7 @@ const StudentDashboard = () => {
                       <FormField
                         control={form.control}
                         name="RollNumber"
+                        disabled
                         render={({ field }) => (
                           <FormItem className="space-y-2">
                             <FormLabel className="text-sm font-medium text-gray-700">Roll Number</FormLabel>
@@ -404,6 +410,7 @@ const StudentDashboard = () => {
                       <FormField
                         control={form.control}
                         name="RoomNumber"
+                        disabled
                         render={({ field }) => (
                           <FormItem className="space-y-2">
                             <FormLabel className="text-sm font-medium text-gray-700">Room Number</FormLabel>
