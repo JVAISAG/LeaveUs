@@ -20,15 +20,4 @@ router.get('/all', async (req, res) => {
   }
 });
 
-router.get('/new', async (req, res) => {
-  try {
-    const hostel = new Hostel(req.body);
-    await hostel.save();
-    return res.status(201).json(hostel);
-  } catch (error) {
-    console.error('Error creating new hostel:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
 module.exports = router;

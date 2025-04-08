@@ -107,7 +107,7 @@ const [facultyName, setFacultyName] = useState('');
               </TableRow>
               {leaveRecords.map((record, index) => (
                 <TableRow key={index}>
-                  <TableCell>{record.studentDetails.rollNo}</TableCell>
+                  <TableCell>{record.rollNo}</TableCell>
                   <TableCell>{new Date(record.startDate).toDateString()}</TableCell>
                   <TableCell>{record.leaveType || "N/A"}</TableCell>
                   <TableCell>{new Date(record.endDate).toDateString()}</TableCell>

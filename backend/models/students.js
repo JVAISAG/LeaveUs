@@ -8,7 +8,7 @@ const studentSchema = new mongoose.Schema({
   parentPhone: { type: String, required: true },
   parentEmail: { type: String, required: true },
   contactNumber: { type: String, required: true },
-  hostelId : { type: mongoose.Schema.Types.ObjectId, ref: "hostels"  },
+  HostelName : { type: mongoose.Schema.Types.ObjectId, ref: "hostels"  },
   RoomNo: { type: String, required: true },
   facultyAdvisor: { type: mongoose.Schema.Types.ObjectId, ref: "faculties" },
 });
