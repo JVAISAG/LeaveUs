@@ -71,6 +71,9 @@ router.post("/new", async (request, response) => {
     }
 
     request.body.workingdays = workingDays;
+    if (request.body.workingdays < 0) {
+      return response.status(400).json({ message: "Invalid date range" });
+    }
 
     // const hostelname = request.body.hostelName;
 
@@ -108,7 +111,18 @@ router.get("/all", async (request, response) => {
         },
       },
       {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
         $unwind: "$student",
+      },
+      {
+        $unwind: "$hostelDetails",
       },
       {
         $project: {
@@ -301,6 +315,20 @@ router.post("/:id/reject", async (request, response) => {
       "Error occurred at leave route POST leaveform/:id/reject",
       error.message
     );
+    return response.status(400).send("Something went wrong");
+  }
+});
+
+router.post('/:id/delete', async (request, response) => {
+  try {
+    const { id } = request.params;
+    const leave = await Leave.findByIdAndDelete(id);
+    if (!leave) {
+      return response.status(404).json({ message: "Leave not found" });
+    }
+    return response.status(200).json({ message: "Leave deleted successfully" });
+  } catch (error) {
+    console.log("Error occurred at leave route POST leaveform/delete", error.message);
     return response.status(400).send("Something went wrong");
   }
 });

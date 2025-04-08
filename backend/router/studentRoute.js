@@ -1,6 +1,8 @@
 const express = require("express");
+const mongoose = require("mongoose")
 const Student = require("../models/students");
 const Leave = require("../models/leave");
+const { APPROVAL_STATUS } = require("../../constants/approvals");
 
 const router = express.Router();
 
@@ -65,14 +67,47 @@ router.get("/:id", async (request, response) => {
 
 router.get("/:id/leaveforms", async (request, response) => {
   try {
-    const { id } = request.params;
+    let { id } = request.params;
 
     const student = Student.findById(id);
     if (!student) {
       return response.status(404).json({ message: "Student not found" });
     }
 
-    const leaves = await Leave.find({ studentId: id });
+    const leaves = await Leave.aggregate([
+      {
+        $match: { studentId: new mongoose.Types.ObjectId(id) },
+      },
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "student",
+        },
+      },
+      {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
+        $unwind: "$student",
+      },
+      {
+        $unwind: "$hostelDetails",
+      },
+      {
+        $project: {
+          "student.passwordHash": 0,
+          __v: 0,
+        },
+      },
+    ])
+
     return response.status(200).json({
       message: "Leaves fetched successfully",
       leaves: leaves,
@@ -99,16 +134,59 @@ router.post("/:id/leaveform/edit/:leaveId", async (request, response) => {
       return response.status(404).json({ message: "Student not found" });
     }
 
-    Leave.updateOne({ _id: leaveId }, { $set: request.body }, (err, result) => {
-      if (err) {
-        return response.status(500).json({ message: "Error updating leave" });
+    if (leave.studentId.toString() !== id) {
+      return response.status(403).json({ message: "Not the owner of the leaveform" });
+    }
+
+    if (leave.status !== APPROVAL_STATUS.PENDING) {
+      return response.status(403).json({ message: "Leave is already in processing phase" });
+    }
+
+    // allowed fields to update
+    const allowedFields = [
+      "reason",
+      "startDate",
+      "endDate",
+      "leaveType"
+    ];
+
+    const invalidFields = Object.keys(request.body).filter(
+      (field) => !allowedFields.includes(field)
+    );
+    if (invalidFields.length > 0) {
+      return response.status(400).json({
+        message: `You are not allowed to update these fields: ${invalidFields.join(", ")}`,
+      });
+    }
+
+
+    if (request.body.startDate) request.body.startDate = new Date(request.body.startDate);
+    if (request.body.endDate) request.body.endDate = new Date(request.body.endDate);
+
+    const workingDays = request.body.endDate - request.body.startDate;
+    if (workingDays < 0) {
+      return response.status(400).json({ message: "Invalid date range" });
+    }
+    request.body.workingdays = Math.ceil(workingDays / (1000 * 60 * 60 * 24)) + 1;
+
+    console.log(request.body)
+    const newleave = await Leave.updateOne(
+      { _id: leave._id },
+      {
+        $set: {
+          ...request.body,
+        },
       }
-    });
+    );
+
+    if (newleave.matchedCount === 0) {
+      return response.status(400).json({ message: "Leave not updated"});
+    }
 
     return response.status(200).json({
       message: "Leave updated successfully",
-      leave: leave,
     });
+
   } catch (error) {
     console.log(
       "Error occurred at student route POST /leaves/:id/edit/:leaveId",
@@ -117,5 +195,36 @@ router.post("/:id/leaveform/edit/:leaveId", async (request, response) => {
     return response.status(400).send("Something went wrong");
   }
 });
+
+router.post('/:id/delete', async (request, response) => {
+  try {
+    const { id } = request.params;
+
+    const student = await Student.findByIdAndDelete(id);
+    if (!res) {
+      return response.status(404).json({ message: "Student not found" });
+    }
+
+    return response.status(200).json({ message: "Student deleted successfully" });
+  } catch (error) {
+    console.log("Error occurred at leave route POST student/delete", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+  
+})
+
+router.post('/new', async (request, response) => {
+  try {
+    const student = new Student(request.body);
+    await student.save();
+    return response.status(201).json({
+      message: "Student created successfully",
+      student: student,
+    });
+  } catch (error) {
+    console.log("Error occurred at student route POST /new", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+})
 
 module.exports = router;
