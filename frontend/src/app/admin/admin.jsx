@@ -213,7 +213,7 @@ export default function AdminDashboardPage() {
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
-      case "Approved": return "bg-green-500";
+      case "Accepted": return "bg-green-500";
       case "Pending": return "bg-yellow-500";
       case "Rejected": return "bg-red-500";
       case "Completed": return "bg-blue-500";
@@ -331,10 +331,14 @@ export default function AdminDashboardPage() {
                     <TableRow key={record._id}>
                       <TableCell>{record._id}</TableCell>
                       <TableCell>{record.studentId}</TableCell>
-                      <TableCell>{record.studentName}</TableCell>
-                      <TableCell>{record.department}</TableCell>
+                      <TableCell>{record.student.name}</TableCell>
+                      <TableCell>{record.student.rollNo.slice(4, 7)}</TableCell>
                       <TableCell>{record.reason}</TableCell>
-                      <TableCell>{record.startDate} to {record.endDate}</TableCell>
+                      <TableCell>
+                        <span className="font-semibold pr-2">{(new Date(record.startDate)).toLocaleDateString()}</span> 
+                        to 
+                        <span className="font-semibold pl-2">{(new Date(record.endDate)).toLocaleDateString()}</span>
+                      </TableCell>
                       <TableCell>
                         <Badge className={getStatusBadgeColor(record.status)}>
                           {record.status}
@@ -361,13 +365,15 @@ export default function AdminDashboardPage() {
                                   <p>{selectedRecord.studentId}</p>
                                   
                                   <p className="font-medium">Name:</p>
-                                  <p>{selectedRecord.studentName}</p>
+                                  <p>{selectedRecord.student.name}</p>
                                   
                                   <p className="font-medium">Department:</p>
-                                  <p>{selectedRecord.department}</p>
+                                  <p>{selectedRecord.student.rollNo.slice(4, 7)}</p>
                                   
                                   <p className="font-medium">Purpose:</p>
-                                  <p>{selectedRecord.reason}</p>
+                                
+                                  <p className="overflow-hidden text-ellipsis">{selectedRecord.reason}</p>
+                                  
                                   
                                   {/* <p className="font-medium">Place:</p>
                                   <p>{selectedRecord.place}</p> */}
@@ -375,20 +381,20 @@ export default function AdminDashboardPage() {
                                   <p className="font-medium">Hostel:</p>
                                   <p>{selectedRecord.hostelId}</p>
                                   
-                                  {/* <p className="font-medium">Mobile:</p>
-                                  <p>{selectedRecord.mobile}</p> */}
+                                  <p className="font-medium">Mobile:</p>
+                                  <p>{selectedRecord.student.contactNumber}</p>
                                   
-                                  {/* <p className="font-medium">Parent Contact:</p>
-                                  <p>{selectedRecord.parentContact}</p> */}
+                                  <p className="font-medium">Parent Contact:</p>
+                                  <p>{selectedRecord.student.parentPhone}</p>
                                   
                                   {/* <p className="font-medium">Created At:</p>
-                                  <p>{selectedRecord.createdAt}</p> */}
+                                  <p>{selectedRecord.createdAt}</p>*/}
                                   
                                   <p className="font-medium">Start Date:</p>
-                                  <p>{selectedRecord.startDate}</p>
+                                  <p>{(new Date(selectedRecord.startDate)).toLocaleDateString()}</p>
                                   
                                   <p className="font-medium">End Date:</p>
-                                  <p>{selectedRecord.endDate}</p>
+                                  <p>{(new Date(selectedRecord.endDate)).toLocaleDateString()}</p>
                                   
                                   {/* <p className="font-medium">Time Out:</p>
                                   <p>{selectedRecord.timeIn}</p>
@@ -541,7 +547,7 @@ export default function AdminDashboardPage() {
         <TabsContent value="directory" className="space-y-6">
           {/* Directory Type Selector */}
           <div className="flex justify-center">
-            <Card className="p-2 flex rounded-lg">
+            <Card className="p-2 !flex-row rounded-lg w-fit !gap-0">
               <Button 
                 variant={directoryMode === "students" ? "default" : "outline"}
                 className={`rounded-r-none ${directoryMode === "students" ? "bg-blue-600" : ""}`}
@@ -615,6 +621,7 @@ export default function AdminDashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {console.log("current directory", currentDirectoryItems)}
                 {currentDirectoryItems.length > 0 ? (
                   currentDirectoryItems.map((person) => (
                     <TableRow key={person._id}>
