@@ -76,16 +76,46 @@ router.get('/:id/leaveforms', async (request, response) => {
       });
     }
 
-    if (faculty.isDean){
+    if (faculty.isDEAN){
       queryConditions.push({ 
         status: APPROVAL_STATUS.HOD_APPROVED ,
         workingdays: { $gt: 2 },
       });
     }
 
-    const leaves = await Leave.find({
-      $or: queryConditions,
-    });
+    const leaves = await Leave.aggregate([
+      {
+        $match: {
+          $or: queryConditions,
+        },
+      },
+      {
+        $lookup: {
+          from: "students",
+          localField: "studentId",
+          foreignField: "_id",
+          as: "studentDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
+        $unwind: "$studentDetails",
+      },
+      {
+        $unwind: "$hostelDetails",
+      },
+    ])
+
+    // const leaves = await Leave.find({
+    //   $or: queryConditions,
+    // });
 
 
     return response.status(200).json({

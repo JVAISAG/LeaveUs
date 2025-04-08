@@ -111,7 +111,18 @@ router.get("/all", async (request, response) => {
         },
       },
       {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
         $unwind: "$student",
+      },
+      {
+        $unwind: "$hostelDetails",
       },
       {
         $project: {

@@ -87,7 +87,18 @@ router.get("/:id/leaveforms", async (request, response) => {
         },
       },
       {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
         $unwind: "$student",
+      },
+      {
+        $unwind: "$hostelDetails",
       },
       {
         $project: {
