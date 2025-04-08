@@ -99,4 +99,16 @@ router.get('/:id/leaveforms', async (request, response) => {
   }
 });
 
+
+router.post('/new', async (req, res) => {
+  try {
+    const faculty = new Faculty(req.body);
+    await faculty.save();
+    return res.status(201).json(faculty);
+  } catch (error) {
+    console.error('Error creating faculty:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;
