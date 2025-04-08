@@ -365,13 +365,15 @@ export default function AdminDashboardPage() {
                                   <p>{selectedRecord.studentId}</p>
                                   
                                   <p className="font-medium">Name:</p>
-                                  <p>{selectedRecord.studentName}</p>
+                                  <p>{selectedRecord.student.name}</p>
                                   
                                   <p className="font-medium">Department:</p>
-                                  <p>{selectedRecord.department}</p>
+                                  <p>{selectedRecord.student.rollNo.slice(4, 7)}</p>
                                   
                                   <p className="font-medium">Purpose:</p>
-                                  <p>{selectedRecord.reason}</p>
+                                
+                                  <p className="overflow-hidden text-ellipsis">{selectedRecord.reason}</p>
+                                  
                                   
                                   {/* <p className="font-medium">Place:</p>
                                   <p>{selectedRecord.place}</p> */}
@@ -379,20 +381,20 @@ export default function AdminDashboardPage() {
                                   <p className="font-medium">Hostel:</p>
                                   <p>{selectedRecord.hostelId}</p>
                                   
-                                  {/* <p className="font-medium">Mobile:</p>
-                                  <p>{selectedRecord.mobile}</p> */}
+                                  <p className="font-medium">Mobile:</p>
+                                  <p>{selectedRecord.student.contactNumber}</p>
                                   
-                                  {/* <p className="font-medium">Parent Contact:</p>
-                                  <p>{selectedRecord.parentContact}</p> */}
+                                  <p className="font-medium">Parent Contact:</p>
+                                  <p>{selectedRecord.student.parentPhone}</p>
                                   
                                   {/* <p className="font-medium">Created At:</p>
-                                  <p>{selectedRecord.createdAt}</p> */}
+                                  <p>{selectedRecord.createdAt}</p>*/}
                                   
                                   <p className="font-medium">Start Date:</p>
-                                  <p>{selectedRecord.startDate}</p>
+                                  <p>{(new Date(selectedRecord.startDate)).toLocaleDateString()}</p>
                                   
                                   <p className="font-medium">End Date:</p>
-                                  <p>{selectedRecord.endDate}</p>
+                                  <p>{(new Date(selectedRecord.endDate)).toLocaleDateString()}</p>
                                   
                                   {/* <p className="font-medium">Time Out:</p>
                                   <p>{selectedRecord.timeIn}</p>
