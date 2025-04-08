@@ -58,8 +58,8 @@ router.post("/new", async (request, response) => {
     request.body.startDate = new Date(request.body.startDate);
     request.body.endDate = new Date(request.body.endDate);
 
-    let start = new Date(startDate);
-    let end = new Date(endDate);
+    let start = new Date(request.body.startDate);
+    let end = new Date(request.body.endDate);
     let workingDays = 0;
 
     while (start <= end) {
@@ -322,10 +322,11 @@ router.post("/:id/reject", async (request, response) => {
 router.post('/:id/delete', async (request, response) => {
   try {
     const { id } = request.params;
+    console.log(id);
     const leave = await Leave.findByIdAndDelete(id);
-    if (!leave) {
-      return response.status(404).json({ message: "Leave not found" });
-    }
+    // if (!leave) {
+    //   return response.status(404).json({ message: "Leave not found" });
+    // }
     return response.status(200).json({ message: "Leave deleted successfully" });
   } catch (error) {
     console.log("Error occurred at leave route POST leaveform/delete", error.message);
