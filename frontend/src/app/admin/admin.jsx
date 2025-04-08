@@ -213,7 +213,7 @@ export default function AdminDashboardPage() {
 
   const getStatusBadgeColor = (status) => {
     switch (status) {
-      case "Approved": return "bg-green-500";
+      case "Accepted": return "bg-green-500";
       case "Pending": return "bg-yellow-500";
       case "Rejected": return "bg-red-500";
       case "Completed": return "bg-blue-500";
@@ -331,10 +331,14 @@ export default function AdminDashboardPage() {
                     <TableRow key={record._id}>
                       <TableCell>{record._id}</TableCell>
                       <TableCell>{record.studentId}</TableCell>
-                      <TableCell>{record.studentName}</TableCell>
-                      <TableCell>{record.department}</TableCell>
+                      <TableCell>{record.student.name}</TableCell>
+                      <TableCell>{record.student.rollNo.slice(4, 7)}</TableCell>
                       <TableCell>{record.reason}</TableCell>
-                      <TableCell>{record.startDate} to {record.endDate}</TableCell>
+                      <TableCell>
+                        <span className="font-semibold pr-2">{(new Date(record.startDate)).toLocaleDateString()}</span> 
+                        to 
+                        <span className="font-semibold pl-2">{(new Date(record.endDate)).toLocaleDateString()}</span>
+                      </TableCell>
                       <TableCell>
                         <Badge className={getStatusBadgeColor(record.status)}>
                           {record.status}
@@ -541,7 +545,7 @@ export default function AdminDashboardPage() {
         <TabsContent value="directory" className="space-y-6">
           {/* Directory Type Selector */}
           <div className="flex justify-center">
-            <Card className="p-2 flex rounded-lg">
+            <Card className="p-2 !flex-row rounded-lg w-fit !gap-0">
               <Button 
                 variant={directoryMode === "students" ? "default" : "outline"}
                 className={`rounded-r-none ${directoryMode === "students" ? "bg-blue-600" : ""}`}
@@ -615,6 +619,7 @@ export default function AdminDashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {console.log("current directory", currentDirectoryItems)}
                 {currentDirectoryItems.length > 0 ? (
                   currentDirectoryItems.map((person) => (
                     <TableRow key={person._id}>

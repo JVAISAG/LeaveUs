@@ -3,8 +3,8 @@ import { Protected } from '../protected'
 
 export default function Page(){
     return (
-        <Protected requiredRole='admin'>
+        // <Protected requiredRole='admin'>
             <Admin/>
-        </Protected>
+        // </Protected>
     )
 }
