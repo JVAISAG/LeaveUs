@@ -64,20 +64,27 @@ router.get('/:id/leaveforms', async (request, response) => {
     }
 
     // for each hostel in the hostels list, get the array of leaves with the hostel id
+    const queryConditions = [
+      { studentId: { $in: students }, status: APPROVAL_STATUS.PENDING },
+      { hostelId: { $in: hostels }, status: APPROVAL_STATUS.ADVISOR_APPROVED }
+    ]
+
+    if (faculty.isHOD){
+      queryConditions.push({ 
+        status: APPROVAL_STATUS.WARDEN_APPROVED ,
+        workingdays: { $gt: 2 },
+      });
+    }
+
+    if (faculty.isDean){
+      queryConditions.push({ 
+        status: APPROVAL_STATUS.HOD_APPROVED ,
+        workingdays: { $gt: 2 },
+      });
+    }
+
     const leaves = await Leave.find({
-      $or: [
-        { 
-          studentId: { $in: students } ,
-          status: APPROVAL_STATUS.PENDING
-        },
-        {
-          hostelId: { $in: hostels } ,
-          status: APPROVAL_STATUS.ADVISOR_APPROVED
-        },
-        {
-          status: APPROVAL_STATUS.REJECTED
-        }
-      ]
+      $or: queryConditions,
     });
 
 
