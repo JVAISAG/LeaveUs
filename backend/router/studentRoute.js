@@ -215,6 +215,12 @@ router.post('/:id/delete', async (request, response) => {
 
 router.post('/new', async (request, response) => {
   try {
+    const password = request.body.password;
+    // hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    request.body.passwordHash = hashedPassword;
+
     const student = new Student(request.body);
     await student.save();
     return response.status(201).json({
