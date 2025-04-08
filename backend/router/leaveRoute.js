@@ -58,8 +58,8 @@ router.post("/new", async (request, response) => {
     request.body.startDate = new Date(request.body.startDate);
     request.body.endDate = new Date(request.body.endDate);
 
-    let start = new Date(startDate);
-    let end = new Date(endDate);
+    let start = new Date(request.body.startDate);
+    let end = new Date(request.body.endDate);
     let workingDays = 0;
 
     while (start <= end) {
@@ -71,6 +71,9 @@ router.post("/new", async (request, response) => {
     }
 
     request.body.workingdays = workingDays;
+    if (request.body.workingdays < 0) {
+      return response.status(400).json({ message: "Invalid date range" });
+    }
 
     // const hostelname = request.body.hostelName;
 
@@ -108,7 +111,18 @@ router.get("/all", async (request, response) => {
         },
       },
       {
+        $lookup: {
+          from: "hostels",
+          localField: "hostelId",
+          foreignField: "_id",
+          as: "hostelDetails",
+        },
+      },
+      {
         $unwind: "$student",
+      },
+      {
+        $unwind: "$hostelDetails",
       },
       {
         $project: {
@@ -238,6 +252,21 @@ router.post("/:id/approve", async (request, response) => {
     return response.status(400).send("Something went wrong");
   }
 });
+router.get("/all", async (request, response) => {
+  try {
+    const leaves = await Leave.find({});
+    console.log("getting all leaves");
+    console.log(leaves);
+    return response.status(200).json({
+      count: leaves.count,
+      data: leaves,
+    });
+  } catch (error) {
+    console.log("Error at GET /leaveform/all", error.message);
+    return response.status(400).send("Something went wrong");
+  }
+});
+
 
 router.post("/:id/reject", async (request, response) => {
   try {
@@ -286,6 +315,21 @@ router.post("/:id/reject", async (request, response) => {
       "Error occurred at leave route POST leaveform/:id/reject",
       error.message
     );
+    return response.status(400).send("Something went wrong");
+  }
+});
+
+router.post('/:id/delete', async (request, response) => {
+  try {
+    const { id } = request.params;
+    console.log(id);
+    const leave = await Leave.findByIdAndDelete(id);
+    // if (!leave) {
+    //   return response.status(404).json({ message: "Leave not found" });
+    // }
+    return response.status(200).json({ message: "Leave deleted successfully" });
+  } catch (error) {
+    console.log("Error occurred at leave route POST leaveform/delete", error.message);
     return response.status(400).send("Something went wrong");
   }
 });
