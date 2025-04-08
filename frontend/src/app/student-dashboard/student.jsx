@@ -160,6 +160,7 @@ const StudentDashboard = () => {
       );
       if (!response.ok) throw new Error("Failed to fetch leave records");
       const data = await response.json();
+      console.log("data", data)
       if (Array.isArray(data.leaves)) {
         setLeaveRecords(data.leaves);
       } else {
@@ -179,7 +180,7 @@ const StudentDashboard = () => {
       const token = localStorage.getItem("token");
       const decodedToken = jwtDecode(token);
 
-      const data = isEdit ? JSON.stringify({
+      const data = !isEdit ? JSON.stringify({
         rollNo: values.RollNumber,
         studentId: decodedToken.userId,
         hostelId: "67eb828f653f4a5a3872e10c", // This should be dynamically set
@@ -196,7 +197,7 @@ const StudentDashboard = () => {
 
       console.log("submitting data", values)
 
-      url = isEdit ? `http://localhost:5000/leaveform/new` : `http://localhost:5000/student/${user}/leaveform/edit/${leaveFormId}` ;
+      const url = !isEdit ? `http://localhost:5000/leaveform/new` : `http://localhost:5000/student/${user}/leaveform/edit/${leaveFormId}` ;
 
       const response = await axios.post(
         url,
@@ -212,7 +213,6 @@ const StudentDashboard = () => {
       setTimeout(() => {
         fetchLeaveRecords();
         setSubmitSuccess(false);
-        closeForm();
       }, 1500);
 
       toast.success("Leaveform submitted successfully.")
@@ -220,6 +220,8 @@ const StudentDashboard = () => {
       toast.error("Something went wrong.")
       console.error("Form submission error", error);
     } finally {
+      setIsEdit(false);
+      setLeaveFormId(false);
       setIsSubmitting(false);
     }
   };
@@ -233,9 +235,11 @@ const StudentDashboard = () => {
       console.log("trying to close")
       setIsFormOpen(false);
       form.reset();
+      setIsEdit(false);
     }
     else {
       setIsFormOpen(true);
+      console.log("edit state", isEdit)
       Object.entries(defaultValues).map(([key, value]) => {
         form.setValue(key, value);
       })
@@ -298,7 +302,7 @@ const StudentDashboard = () => {
                 <TableCell className="font-bold">Status</TableCell>
                 <TableCell className="font-bold">Actions</TableCell>
               </TableRow>
-              {/* {console.log("leave records", leaveRecords)} */}
+              {console.log("leave records", leaveRecords)}
               {leaveRecords.map((record, index) => (
                 <TableRow key={index}>
                   <TableCell>
