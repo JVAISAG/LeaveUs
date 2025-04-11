@@ -14,6 +14,8 @@ import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {useAuth} from '@/app/AuthProvider'
 import { DialogTitle } from "@radix-ui/react-dialog";
+import axios from "axios";
+import AddForm from './Addform'
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState("leaveRecords");
@@ -47,6 +49,7 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
 
   useEffect(() => {
     // In a real app, this would fetch from your API
@@ -210,7 +213,46 @@ export default function AdminDashboardPage() {
     const status = action === "approve" ? "Approved" : action === "reject" ? "Rejected" : "Completed";
     handleStatusChange(selectedRecord.id, status);
   };
+  const [formData, setFormData] = useState({
+  name: "",
+  id: "",
+  department: "",
+  email: "",
+  mobile: "",
+  // Student specific fields
+  year: "",
+  hostel: "",
+  room: "",
+  parentName: "",
+  parentContact: "",
+  address: "",
+  // Faculty specific fields
+  designation: "",
+  joiningYear: "",
+  office: "",
+  specialization: ""
+});
 
+// Handle input changes
+const handleInputChange = (e) => {
+  const { id, value } = e.target;
+  setFormData(prev => ({
+    ...prev,
+    [id]: value
+  }));
+};
+
+// Handle select changes
+const handleSelectChange = (value, fieldName) => {
+  setFormData(prev => ({
+    ...prev,
+    [fieldName]: value
+  }));
+};
+
+// Function to submit the form data
+
+  
   const getStatusBadgeColor = (status) => {
     switch (status) {
       case "Accepted": return "bg-green-500";
@@ -800,142 +842,9 @@ export default function AdminDashboardPage() {
                 <h2 className="text-xl font-semibold border-b pb-2 mb-4">
                   Add New {directoryMode === "students" ? "Student" : "Faculty"}
                 </h2>
+                <AddForm directoryMode={directoryMode}/>
                 
-                <form className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="col-span-2">
-                      <label htmlFor="name" className="block text-sm font-medium mb-1">Full Name</label>
-                      <Input id="name" placeholder="Enter full name" />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="id" className="block text-sm font-medium mb-1">ID</label>
-                      <Input id="id" placeholder={directoryMode === "students" ? "e.g. 2023cse0123" : "e.g. CSE011"} />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="department" className="block text-sm font-medium mb-1">Department</label>
-                      <Select>
-                        <SelectTrigger id="department">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CSE">CSE</SelectItem>
-                          <SelectItem value="CSY">CSY</SelectItem>
-                          <SelectItem value="ECE">ECE</SelectItem>
-                          <SelectItem value="CD">Data Science</SelectItem>
-                          {/* <SelectItem value="EEE">EEE</SelectItem> */}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-                      <Input id="email" type="email" placeholder="Enter email address" />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="mobile" className="block text-sm font-medium mb-1">Mobile</label>
-                      <Input id="mobile" placeholder="Enter mobile number" />
-                    </div>
-                    
-                    {directoryMode === "students" ? (
-                      <>
-                        <div>
-                          <label htmlFor="year" className="block text-sm font-medium mb-1">Year</label>
-                          <Select>
-                            <SelectTrigger id="year">
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="1st">1st Year</SelectItem>
-                              <SelectItem value="2nd">2nd Year</SelectItem>
-                              <SelectItem value="3rd">3rd Year</SelectItem>
-                              <SelectItem value="4th">4th Year</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="hostel" className="block text-sm font-medium mb-1">Hostel</label>
-                          <Select>
-                            <SelectTrigger id="hostel">
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="A Block">A Block</SelectItem>
-                              <SelectItem value="B Block">B Block</SelectItem>
-                              <SelectItem value="C Block">C Block</SelectItem>
-                              <SelectItem value="D Block">D Block</SelectItem>
-                              <SelectItem value="E Block">E Block</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="room" className="block text-sm font-medium mb-1">Room Number</label>
-                          <Input id="room" placeholder="e.g. A-101" />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="parentName" className="block text-sm font-medium mb-1">Parent Name</label>
-                          <Input id="parentName" placeholder="Enter parent name" />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="parentContact" className="block text-sm font-medium mb-1">Parent Contact</label>
-                          <Input id="parentContact" placeholder="Enter parent contact" />
-                        </div>
-                        
-                        <div className="col-span-2">
-                          <label htmlFor="address" className="block text-sm font-medium mb-1">Address</label>
-                          <Textarea id="address" placeholder="Enter permanent address" />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <label htmlFor="designation" className="block text-sm font-medium mb-1">Designation</label>
-                          <Select>
-                            <SelectTrigger id="designation">
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Professor">Professor</SelectItem>
-                              <SelectItem value="Associate Professor">Associate Professor</SelectItem>
-                              <SelectItem value="Assistant Professor">Assistant Professor</SelectItem>
-                              <SelectItem value="Lecturer">Lecturer</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="joiningYear" className="block text-sm font-medium mb-1">Joining Year</label>
-                          <Input id="joiningYear" placeholder="e.g. 2020" />
-                        </div>
-                        
-                        <div>
-                          <label htmlFor="office" className="block text-sm font-medium mb-1">Office</label>
-                          <Input id="office" placeholder="e.g. CSE Building, Room 101" />
-                        </div>
-                        
-                        <div className="col-span-2">
-                          <label htmlFor="specialization" className="block text-sm font-medium mb-1">Specialization</label>
-                          <Input id="specialization" placeholder="e.g. Artificial Intelligence" />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-end gap-2 pt-2">
-                    <DialogClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DialogClose>
-                    <DialogClose asChild>
-                      <Button type="submit" className="bg-blue-600 hover:bg-blue-700">Save</Button>
-                    </DialogClose>
-                  </div>
-                </form>
+                
               </DialogContent>
             </Dialog>
           </div>
