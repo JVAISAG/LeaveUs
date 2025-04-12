@@ -275,12 +275,17 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   };
   const [facultyId,setfacultyId] = useState({})
   const [allFaculty,setAllFaculty] = useState([])
+  const [allHostel,setAllHostel] = useState([])
 
   useEffect(async ()=>{
     const res = await axios.get(`https://localhost:5000/faculty/all`)
     setAllFaculty(res.data)
   },[])
 
+  useEffect(async()=>{
+    const res = await axios.get(`http://localhost:5000/hostel/all`)
+    setAllHostel(res.data)
+  })
   const fetchFaculty  = async (id)=>{
     const res = await axios.get(`https://localhost:5000/faculty/${id}`)
     console.log('fecultyFetch : ',res.data)
@@ -411,7 +416,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {allFaculty.map((person)=>{
-                    <Select value = {person._id}>{person.name}</Select>
+                    <SelectItem value = {person._id}>{person.name}</SelectItem>
                   })}
                   
                 </SelectContent>
@@ -428,11 +433,10 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Sahyadri">Sahyadri</SelectItem>
-                  <SelectItem value="Anamudi">Anamudi</SelectItem>
-                  <SelectItem value="Manimala">Manimala</SelectItem>
-                  <SelectItem value="Cooptyre">Cooptyre</SelectItem>
-                  <SelectItem value="Agasthya">Agasthya</SelectItem>
+                {allHostel.map((person)=>{
+                    <SelectItem value = {person._id}>{person.name}</SelectItem>
+                  })}
+                  
                 </SelectContent>
               </Select>
               {errors.hostel && <p className="text-red-500 text-xs mt-1">{errors.hostel}</p>}
