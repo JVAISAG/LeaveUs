@@ -345,7 +345,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="e.g. 2020" 
+                placeholder="Enter Password" 
                 className={errors.password ? "border-red-500" : ""}
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
@@ -360,7 +360,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 type="password" 
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="e.g. CSE Building, Room 101" 
+                placeholder="Enter Password" 
                 className={errors.confirmPassword ? "border-red-500" : ""}
               />
               {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
@@ -457,7 +457,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 id="parentContact" 
                 value={formData.parentContact}
                 onChange={handleInputChange}
-                placeholder="Enter parent contact" 
+                placeholder="Enter parent Email" 
                 className={errors.parentContact ? "border-red-500" : ""}
               />
               {errors.parentContact && <p className="text-red-500 text-xs mt-1">{errors.parentContact}</p>}
