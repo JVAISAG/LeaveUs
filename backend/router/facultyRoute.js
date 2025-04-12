@@ -132,6 +132,10 @@ router.get('/:id/leaveforms', async (request, response) => {
 
 router.post('/new', async (req, res) => {
   try {
+    const password = request.body.password;
+    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+    request.body.passwordHash = hashedPassword;
+    
     const faculty = new Faculty(req.body);
     await faculty.save();
     return res.status(201).json(faculty);

@@ -216,9 +216,7 @@ router.post('/:id/delete', async (request, response) => {
 router.post('/new', async (request, response) => {
   try {
     const password = request.body.password;
-    // hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
     request.body.passwordHash = hashedPassword;
 
     const student = new Student(request.body);
