@@ -13,6 +13,7 @@ const ROLE = {
   WARDEN: "Warden",
   HOD: "HOD",
   DEAN: "DEAN",
+  CHIEF_WARDEN: "CHIEF_WARDEN"
 };
 
 const STATUS = {

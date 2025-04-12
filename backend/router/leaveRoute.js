@@ -41,7 +41,7 @@ const validateWarden = async (facultyId, hostelId) => {
     return false;
   }
 
-  if (!hostel.wardens.includes(facultyId)) {
+  if (!hostel.wardens.includes(facultyId) || !(hostel.chiefWarden === facultyId)) {
     console.log("Faculty is not a warden of the hostel");
     return false;
   }
@@ -215,7 +215,10 @@ router.post("/:id/approve", async (request, response) => {
     // update the approval status
     console.log(status);
 
-    let setQuery = {};
+    let setQuery = {
+      
+
+    };
     if (
       (leave.workingdays <= 2 && status == APPROVAL_STATUS.WARDEN_APPROVED) ||
       status === APPROVAL_STATUS.DEAN_APPROVED
@@ -237,6 +240,13 @@ router.post("/:id/approve", async (request, response) => {
       { _id: leave._id },
       {
         $set: setQuery,
+        $push: {
+          approvals: {
+            facultyId: facultyId,
+            role: nextApproverRole,
+            status: status,
+          },
+        }
       }
     );
 
@@ -303,6 +313,13 @@ router.post("/:id/reject", async (request, response) => {
           finalApproval: STATUS.REJECTED,
           nextApproverRole: null,
         },
+        $push: {
+          approvals: {
+            facultyId: facultyId,
+            role: nextApproverRole,
+            status: status,
+          },
+        }
       }
     );
 

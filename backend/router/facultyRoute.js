@@ -56,12 +56,17 @@ router.get('/:id/leaveforms', async (request, response) => {
     // hostel stores the various faculty in a list 
     // check each hostel record to know which faculty is the warden of the hostel
     const hostels = (await Hostel.find({
-      wardens: { $in: [id] }
+      $or: [
+        { chiefWarden: id },
+        { wardens: { $in: [id] } }
+      ]
     })).map(hostel => hostel._id);
 
     if (hostels.length === 0) {
       console.log("No hostels found for this faculty");
     }
+
+    console.log("Hostels : ", hostels);
 
     // for each hostel in the hostels list, get the array of leaves with the hostel id
     const queryConditions = [
@@ -70,7 +75,24 @@ router.get('/:id/leaveforms', async (request, response) => {
     ]
 
     if (faculty.isHOD){
+      // get the students for whom the faculty is the hod
+      // e.g: if the faculty department is CY
+      // then she has to get all the students with rollnumbers that begin with 202[0-4]BCY[0-9][0-9][0-9][0-9]
+
+      const mapping = {
+        'CSE': 'CS',
+        'ECE': 'EC',
+        'CSY': 'CY',
+        'CD': 'CD',
+      }
+
+      // ^202[0-9]B${mapping[faculty.department]}[0-9][0-9][0-9][0-9]
+      const students = (await Student.find({
+        rollNo: { $regex: `^202[0-9]B${mapping[faculty.department]}[0-9][0-9][0-9][0-9]` },
+      })).map(student => student._id);
+      // console.log('students', students)
       queryConditions.push({ 
+        studentId: { $in: students },
         status: APPROVAL_STATUS.WARDEN_APPROVED ,
         workingdays: { $gt: 2 },
       });
