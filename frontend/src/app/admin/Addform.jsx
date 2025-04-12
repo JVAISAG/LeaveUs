@@ -280,7 +280,11 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
 
   useEffect(()=>{
    const fetchData = async ()=>{
-    const res = await axios.get(`https://localhost:5000/faculty/all`)
+    const res = await axios.get(`https://localhost:5000/faculty/all`,{
+      headers : {
+        ""
+      }
+    })
     setAllFaculty(res.data)
    }  
    fetchData()
@@ -414,11 +418,11 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
         </div>
         
              <div>
-              <label htmlFor="year" className="block text-sm font-medium mb-1">
-                Year <span className="text-red-500">*</span>
+              <label htmlFor="faculty" className="block text-sm font-medium mb-1">
+                Faculty Advisor <span className="text-red-500">*</span>
               </label>
-              <Select onValueChange={(value) => handleSelectChange(value, "year")}>
-                <SelectTrigger id="year" className={errors.year ? "border-red-500" : ""}>
+              <Select onValueChange={(value) => handleSelectChange(value, "faculty")}>
+                <SelectTrigger id="faculty" className={errors.faculty ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
