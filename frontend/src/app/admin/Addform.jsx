@@ -214,7 +214,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
               ...commonFields,
             id: formData.id,
             contactNumber: formData.contactNumber,
-            faculty : formData.faculty,
+            facultyAdvisor : formData.faculty,
 
               // year: formData.year,
               hostel: formData.hostel,
