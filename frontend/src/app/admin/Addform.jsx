@@ -226,6 +226,8 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
               ...commonFields,
               designation: formData.designation,
             department: formData.department,
+            isHOD : formData.department?true : false,
+            isDEAN : formData.department?true : false,
 
             //   joiningYear: formData.joiningYear,
             //   office: formData.office,
