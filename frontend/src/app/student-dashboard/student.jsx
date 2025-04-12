@@ -131,7 +131,7 @@ const StudentDashboard = () => {
 
   const fetchStudentDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/student/${user}`);
+      const response = await fetch(`http://localhost:5000/students/${user}`);
       if (!response.ok) throw new Error("Failed to fetch student details");
       const data = await response.json();
       setStudentName(data.name);
@@ -156,7 +156,7 @@ const StudentDashboard = () => {
   const fetchLeaveRecords = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/student/${user}/leaveforms`
+        `http://localhost:5000/students/${user}/leaveforms`
       );
       if (!response.ok) throw new Error("Failed to fetch leave records");
       const data = await response.json();
@@ -197,7 +197,7 @@ const StudentDashboard = () => {
 
       console.log("submitting data", values)
 
-      const url = !isEdit ? `http://localhost:5000/leaveform/new` : `http://localhost:5000/student/${user}/leaveform/edit/${leaveFormId}` ;
+      const url = !isEdit ? `http://localhost:5000/leaveform/new` : `http://localhost:5000/students/${user}/leaveform/edit/${leaveFormId}` ;
 
       const response = await axios.post(
         url,

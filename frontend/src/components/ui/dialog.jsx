@@ -27,7 +27,11 @@ function DialogPortal({
 function DialogClose({
   ...props
 }) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
+  return (
+    <Dialog>
+      <DialogPrimitive.Close data-slot="dialog-close" {...props} />
+    </Dialog>
+  );
 }
 
 function DialogOverlay({
@@ -52,8 +56,9 @@ function DialogContent({
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogTitle></DialogTitle>
+      {/* <DialogTitle></DialogTitle> */}
       <DialogOverlay />
+      <DialogTitle></DialogTitle>
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
