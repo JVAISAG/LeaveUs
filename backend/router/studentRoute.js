@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose")
 const Student = require("../models/students");
 const Leave = require("../models/leave");
+const bcrypt = require("bcrypt");
 const { APPROVAL_STATUS } = require("../../constants/approvals");
 
 const router = express.Router();
@@ -41,8 +42,8 @@ router.get("/", async (request, response) => {
 router.get("/all", async (request, response) => {
   try {
     const students = await Student.find({});
-    console.log("getting all students");
-    console.log(students);
+    // console.log("getting all students");
+    // console.log(students);
     return response.status(200).json({
       count: students.count,
       data: students,
@@ -215,8 +216,8 @@ router.post('/:id/delete', async (request, response) => {
 
 router.post('/new', async (request, response) => {
   try {
-    const password = request.body.password;
-    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+    const password = request.body.passwordHash;
+    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     request.body.passwordHash = hashedPassword;
 
     const student = new Student(request.body);
