@@ -32,6 +32,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     room: "",
     parentEmail: "",
     parentContact: "",
+    faculty : "",
     // address: "",
     // Faculty specific fields
     // designation: "",
@@ -48,6 +49,8 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     password : "",
     confirmPassword : "",
     contactNumber: "",
+    faculty : "",
+
     // Student specific fields
     // year: "",
     hostel: "",
@@ -130,7 +133,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     // Student-specific validations
     if (directoryMode === "students") {
       if (!formData.id.trim()) newErrors.id = "ID is required";
-      // if (!formData.year) newErrors.year = "Year is required";
+      if (!formData.faculty) newErrors.faculty = "Select a faculty advispr";
       if (!formData.hostel) newErrors.hostel = "Hostel is required";
       if (!formData.room.trim()) newErrors.room = "Room number is required";
       if (!formData.parentEmail.trim()) newErrors.parentEmail = "Parent name is required";
@@ -211,14 +214,15 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
               ...commonFields,
             id: formData.id,
             contactNumber: formData.contactNumber,
+            faculty : formData.faculty,
 
               // year: formData.year,
               hostel: formData.hostel,
-              room: formData.room,
+              RoomNo: formData.room,
                parentEmail: formData.parentEmail,
               parentPhone: formData.parentContact,
               // address: formData.address,
-              // Any other student-specific fields
+              // Any other student-specific fields  
             };
           } else {
             // Faculty-specific data structure
@@ -269,7 +273,19 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     });
 
   };
+  const [facultyId,setfacultyId] = useState({})
+  const [allFaculty,setAllFaculty] = useState([])
 
+  useEffect(async ()=>{
+    const res = await axios.get(`https://localhost:5000/faculty/all`)
+    setAllFaculty(res.data)
+  },[])
+
+  const fetchFaculty  = async (id)=>{
+    const res = await axios.get(`https://localhost:5000/faculty/${id}`)
+    console.log('fecultyFetch : ',res.data)
+    setfacultyId(res.data)
+  }
   return (
     <form className="space-y-4" onSubmit={(e)=>{
         e.preventDefault();
@@ -385,7 +401,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
           {errors.id && <p className="text-red-500 text-xs mt-1">{errors.id}</p>}
         </div>
         
-            {/* <div>
+             <div>
               <label htmlFor="year" className="block text-sm font-medium mb-1">
                 Year <span className="text-red-500">*</span>
               </label>
@@ -394,14 +410,14 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1st">1st Year</SelectItem>
-                  <SelectItem value="2nd">2nd Year</SelectItem>
-                  <SelectItem value="3rd">3rd Year</SelectItem>
-                  <SelectItem value="4th">4th Year</SelectItem>
+                  {allFaculty.map((person)=>{
+                    <Select value = {person._id}>{person.name}</Select>
+                  })}
+                  
                 </SelectContent>
               </Select>
-              {errors.year && <p className="text-red-500 text-xs mt-1">{errors.year}</p>}
-            </div> */}
+              {errors.faculty && <p className="text-red-500 text-xs mt-1">{errors.faculty}</p>}
+            </div> 
             
             <div>
               <label htmlFor="hostel" className="block text-sm font-medium mb-1">
