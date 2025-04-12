@@ -41,7 +41,7 @@ const validateWarden = async (facultyId, hostelId) => {
     return false;
   }
 
-  if (!hostel.wardens.includes(facultyId) || !(hostel.chiefWarden === facultyId)) {
+  if (!hostel.wardens.includes(facultyId) && !(hostel.chiefWarden === facultyId)) {
     console.log("Faculty is not a warden of the hostel");
     return false;
   }
