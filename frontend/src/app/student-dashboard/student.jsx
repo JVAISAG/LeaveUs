@@ -131,7 +131,7 @@ const StudentDashboard = () => {
 
   const fetchStudentDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/student/${user}`);
+      const response = await fetch(`http://localhost:5000/students/${user}`);
       if (!response.ok) throw new Error("Failed to fetch student details");
       const data = await response.json();
       setStudentName(data.name);

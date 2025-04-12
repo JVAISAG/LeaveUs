@@ -136,6 +136,7 @@ router.post('/new', async (req, res) => {
     await faculty.save();
     return res.status(201).json(faculty);
   } catch (error) {
+    // console.log("request : ",req)
     console.error('Error creating faculty:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
