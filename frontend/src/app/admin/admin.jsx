@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
         setFilteredRecords(mockData);
       });
       
-      fetch("http://localhost:5000/student/all")
+      fetch("http://localhost:5000/students/all")
         .then((res)=>res.json())
         .then((data)=>{
             console.log("student data : ",data)
