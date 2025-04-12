@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Protected } from "@/app/protected";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 const FacultyDashboard = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const { user, role, logout } = useAuth();
   const router = useRouter();
   const [leaveRecords, setLeaveRecords] = useState([]);
@@ -44,6 +47,7 @@ const [facultyName, setFacultyName] = useState('');
       const data = await response.json();
       if (Array.isArray(data.leaves)) {
         setLeaveRecords(data.leaves);
+        console.log("fetched faculty leaves", data.leaves)
       } else {
         console.error("Invalid data format:", data);
         setLeaveRecords([]);
@@ -77,6 +81,10 @@ const [facultyName, setFacultyName] = useState('');
     return null;
   }
   console.log(leaveRecords)
+
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
+
   return (
     <Protected requiredRole="faculty">
       <div className="min-h-screen bg-white p-4">
@@ -125,6 +133,7 @@ const [facultyName, setFacultyName] = useState('');
                         Already Rejected
                       </div>
                     ) : (<div>
+                      <LeaveDialog isOpen={isOpen} leave={record} setIsOpen={setIsOpen} />
                       <Button className="bg-green-500 text-white mr-2" onClick={() => handleDecision(record._id, "approve")}>
                         Accept
                       </Button>
@@ -143,5 +152,56 @@ const [facultyName, setFacultyName] = useState('');
   );
  
 };
+
+const LeaveDialog = ({ leave, onClose, isOpen, setIsOpen }) => {
+  return (
+    <Dialog open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
+      <DialogTrigger asChild>
+        <Button className='mr-2' onClick={() => setIsOpen(true)}>View</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold">{leave.studentDetails.name}</DialogTitle>
+          <p className="text-sm">{leave.studentDetails.rollNo}</p>
+          <div className="flex items-center gap-2 ">
+            <p className="font-bold block">Purpose: </p>
+            <p className="text-sm pt-0.5">{leave.reason}</p>
+          </div>
+          <div className="flex items-center gap-2 ">
+            <p className="font-bold block">Leave Type: </p>
+            <p className="text-sm pt-0.5">{leave.leaveType}</p>
+          </div>
+          <div className="flex items-center gap-2 ">
+            <p className="font-bold block">Contact Number: </p>
+            <p className="text-sm pt-0.5">{leave.studentDetails.contactNumber}</p>
+          </div>
+          <div className="flex items-center gap-2 ">
+            <p className="font-bold block">Email: </p>
+            <p className="text-sm pt-0.5">{leave.studentDetails.email}</p>
+          </div>
+          <div className="flex items-center gap-2 ">
+            <p className="font-bold block">Hostel Name: </p>
+            <p className="text-sm pt-0.5">{leave.hostelDetails.name}</p>
+          </div>
+
+
+          <div className="flex items-center gap-2">
+            <p className="font-bold">Start Date: </p>
+            <p className="text-sm pt-0.5">{new Date(leave.startDate).toDateString()} </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold">End Date: </p>
+            <p className="text-sm pt-0.5">{new Date(leave.endDate).toDateString()} </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <p className="font-bold">Status: </p>
+            <p className="text-sm pt-0.5">{leave.status}</p>
+          </div>
+        </DialogHeader>
+        <Button variant="outline" onClick={() => setIsOpen(false)}>Close</Button>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default FacultyDashboard;
