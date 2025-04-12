@@ -131,8 +131,8 @@ router.get("/all", async (request, response) => {
         }
       }
     ])
-    console.log("getting all leaves");
-    console.log(leaves);
+    // console.log("getting all leaves");
+    // console.log(leaves);
     return response.status(200).json({
       count: leaves.length,
       data: leaves,

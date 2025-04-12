@@ -1,4 +1,5 @@
 const Faculty = require('../models/faculty');
+const bcrypt = require('bcrypt');
 const Leave = require('../models/leave');
 const Student = require('../models/students');
 const Hostel = require('../models/hostel');
@@ -154,11 +155,13 @@ router.get('/:id/leaveforms', async (request, response) => {
 
 router.post('/new', async (req, res) => {
   try {
-    const password = request.body.password;
-    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
-    request.body.passwordHash = hashedPassword;
+    // console.log("new faculty", req.body)
+    const password = req.body.passwordHash;
+    const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+    req.body.passwordHash = hashedPassword;
     
     const faculty = new Faculty(req.body);
+    // console.log("faculty : ", faculty)
     await faculty.save();
     return res.status(201).json(faculty);
   } catch (error) {
