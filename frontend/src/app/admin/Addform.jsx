@@ -16,6 +16,7 @@ import {useAuth} from '@/app/AuthProvider'
 import { DialogTitle } from "@radix-ui/react-dialog";
 import axios from "axios";
 import AddForm from './Addform'
+import { fetchData } from "next-auth/client/_utils";
 const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   // State for form data
   const [formData, setFormData] = useState({
@@ -277,15 +278,21 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   const [allFaculty,setAllFaculty] = useState([])
   const [allHostel,setAllHostel] = useState([])
 
-  useEffect(async ()=>{
+  useEffect(()=>{
+   const fetchData = async ()=>{
     const res = await axios.get(`https://localhost:5000/faculty/all`)
     setAllFaculty(res.data)
+   }
+   fetchData()
   },[])
 
   useEffect(async()=>{
+   const fetchData = async ()=>{
     const res = await axios.get(`http://localhost:5000/hostel/all`)
     setAllHostel(res.data)
-  })
+   }
+   fetchData()
+  },[])
   const fetchFaculty  = async (id)=>{
     const res = await axios.get(`https://localhost:5000/faculty/${id}`)
     console.log('fecultyFetch : ',res.data)
