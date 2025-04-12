@@ -8,9 +8,9 @@ const studentSchema = new mongoose.Schema({
   parentPhone: { type: String, required: true },
   parentEmail: { type: String, required: true },
   contactNumber: { type: String, required: true },
-  hostelId : { type: mongoose.Schema.Types.ObjectId, ref: "hostels"  },
+  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: "hostels", required: true },
   RoomNo: { type: String, required: true },
-  facultyAdvisor: { type: mongoose.Schema.Types.ObjectId, ref: "faculties" },
+  facultyAdvisor: { type: mongoose.Schema.Types.ObjectId, ref: "faculties", required: true },
 });
 
 module.exports = mongoose.model("students", studentSchema);
