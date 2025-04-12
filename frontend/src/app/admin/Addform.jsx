@@ -111,7 +111,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     // Required fields for all forms
     if (!formData.name.trim()) newErrors.name = "Name is required";
     
-    if (!formData.department) newErrors.department = "Department is required";
+    // if (!formData.department) newErrors.department = "Department is required";
     
     // Email validation
     if (!formData.email.trim()) {
@@ -295,7 +295,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
             Department <span className="text-red-500">*</span>
           </label>
           <Select onValueChange={(value) => handleSelectChange(value, "department")}>
-            <SelectTrigger id="department" className={errors.department ? "border-red-500" : ""}>
+            <SelectTrigger id="department" className={""}>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
