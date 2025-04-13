@@ -280,9 +280,9 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
 
   useEffect(()=>{
    const fetchData = async ()=>{
-    const res = await axios.get(`https://localhost:5000/faculty/all`,{
+    const res = await axios.get(`http://localhost:5000/faculty/all`,{
       headers : {
-        ""
+        "Content-Type" : "application/json",
       }
     })
     setAllFaculty(res.data)
@@ -292,13 +292,16 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
 
   useEffect(()=>{
    const fetchData = async ()=>{
-    const res = await axios.get(`http://localhost:5000/hostel/all`)
-    setAllHostel(res.data)
+    const res1 = await axios.get(`http://localhost:5000/hostel/all`)
+    setAllHostel(res1.data)
+    const res2 = await axios.get(`http://localhost:5000/faculty/${id}`)
+    console.log('fecultyFetch : ',res2.data)
+    setfacultyId(res2.data)
    }
    fetchData()
   },[])
   const fetchFaculty  = async (id)=>{
-    const res = await axios.get(`https://localhost:5000/faculty/${id}`)
+    const res = await axios.get(`http://localhost:5000/faculty/${id}`)
     console.log('fecultyFetch : ',res.data)
     setfacultyId(res.data)
   }
@@ -427,7 +430,10 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {allFaculty.map((person)=>{
-                    <SelectItem value = {person._id}>{person.name}</SelectItem>
+                    console.log("person : ",person)
+                    return (
+                      <SelectItem value = {person._id}>{person.name}</SelectItem>
+                    )
                   })}
                   
                 </SelectContent>
@@ -444,9 +450,9 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                {allHostel.map((person)=>{
+                {allHostel.map((person)=>(
                     <SelectItem value = {person._id}>{person.name}</SelectItem>
-                  })}
+                  ))}
                   
                 </SelectContent>
               </Select>
