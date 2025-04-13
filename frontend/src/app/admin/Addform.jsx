@@ -21,7 +21,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   // State for form data
   const [formData, setFormData] = useState({
     name: "",
-    id: "",
+    rollNo: "",
     department: "",
     email: "",
     password : "",
@@ -29,7 +29,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     contactNumber: "",
     // Student specific fields
     year: "",
-    hostel: "",
+    hostelId: "",
     room: "",
     parentEmail: "",
     parentContact: "",
@@ -133,9 +133,9 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     
     // Student-specific validations
     if (directoryMode === "students") {
-      if (!formData.id.trim()) newErrors.id = "ID is required";
+      if (!formData.rollNo.trim()) newErrors.id = "ID is required";
       if (!formData.faculty) newErrors.faculty = "Select a faculty advispr";
-      if (!formData.hostel) newErrors.hostel = "Hostel is required";
+      if (!formData.hostelId) newErrors.hostel = "Hostel is required";
       if (!formData.room.trim()) newErrors.room = "Room number is required";
       if (!formData.parentEmail.trim()) newErrors.parentEmail = "Parent name is required";
       if (!formData.parentContact.trim()) {
@@ -213,12 +213,12 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
             // Student-specific data structure
             dataToSend = {
               ...commonFields,
-            id: formData.id,
+            rollNo: formData.rollNo,
             contactNumber: formData.contactNumber,
             facultyAdvisor : formData.faculty,
 
               // year: formData.year,
-              hostel: formData.hostel,
+              hostelId: formData.hostelId,
               RoomNo: formData.room,
                parentEmail: formData.parentEmail,
               parentPhone: formData.parentContact,
@@ -257,12 +257,12 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
     // Reset form after submission
     setFormData({
       name: "",
-      id: "",
+      rollNo: "",
       department: "",
       email: "",
       contactNumber: "",
       year: "",
-      hostel: "",
+      hostelId: "",
       room: "",
       parentEmail: "",
       parentContact: "",
@@ -411,8 +411,8 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
             ID <span className="text-red-500">*</span>
           </label>
           <Input 
-            id="id" 
-            value={formData.id}
+            id="rollNo" 
+            value={formData.rollNo}
             onChange={handleInputChange}
             placeholder={directoryMode === "students" ? "e.g. 2023cse0123" : "e.g. CSE011"} 
             className={errors.id ? "border-red-500" : ""}
@@ -430,7 +430,6 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {allFaculty.map((person)=>{
-                    console.log("person : ",person)
                     return (
                       <SelectItem value = {person._id}>{person.name}</SelectItem>
                     )
@@ -445,7 +444,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
               <label htmlFor="hostel" className="block text-sm font-medium mb-1">
                 Hostel <span className="text-red-500">*</span>
               </label>
-              <Select onValueChange={(value) => handleSelectChange(value, "hostel")}>
+              <Select onValueChange={(value) => handleSelectChange(value, "hostelId")}>
                 <SelectTrigger id="hostel" className={errors.hostel ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
