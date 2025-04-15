@@ -128,7 +128,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     let result = [...leaveRecords];
-    
+    console.log("result : ",result)
     // Apply status filter
     if (statusFilter !== "All") {
       result = result.filter(record => record.status === statusFilter);
@@ -137,12 +137,17 @@ export default function AdminDashboardPage() {
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(record => 
-        record.studentId.toLowerCase().includes(query) ||
-        // record.studentName.toLowerCase().includes(query) ||
-        record.rollNo.includes(query) ||
-        record.reason.toLowerCase().includes(query)
+      result = result.filter((record) => 
+       {
+        console.log("query : ",query)
+       return ( record.studentId.toLowerCase().includes(query) ||
+        record.student.name.toLowerCase().includes(query) ||
+        record.student.rollNo.toLowerCase().includes(query) ||
+        record.reason.toLowerCase().includes(query))
+       }
+       
       );
+      console.log("Result : ",result)
     }
     
     setFilteredRecords(result);
@@ -163,21 +168,26 @@ export default function AdminDashboardPage() {
     // Apply search filter
     if (directorySearchQuery) {
       const query = directorySearchQuery.toLowerCase();
-      studentResult = studentResult.filter(student => 
-        student.rollNo.toLowerCase().includes(query) ||
+      console.log("Student Res : ",studentResult)
+      studentResult = studentResult.filter((student) => 
+       {
+       return student.rollNo.toLowerCase().includes(query) ||
         student.name.toLowerCase().includes(query) ||
         // student.department.toLowerCase().includes(query) ||
         student.email.toLowerCase().includes(query) ||
         student.contactNumber.includes(query)
+       }
       );
+      console.log("Faculty Result : ",facultyResult)
       
-      facultyResult = facultyResult.filter(faculty => 
-        faculty.id.toLowerCase().includes(query) ||
+      facultyResult = facultyResult.filter((faculty) => 
+       {return  faculty._id.toLowerCase().includes(query) ||
         faculty.name.toLowerCase().includes(query) ||
-        faculty.department.toLowerCase().includes(query) ||
-        faculty.email.toLowerCase().includes(query) ||
-        faculty.designation.toLowerCase().includes(query) ||
-        faculty.mobile.includes(query)
+        // faculty.department.toLowerCase().includes(query) ||
+        faculty.email.toLowerCase().includes(query) 
+        // faculty.designation.toLowerCase().includes(query) ||
+        // faculty.mobile.includes(query)
+       }
       );
     }
     
