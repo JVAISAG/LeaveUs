@@ -338,7 +338,7 @@ const StudentDashboard = () => {
                     >
                       View Details
                     </Button>
-                    <Button
+                    {/* <Button
                       variant="destructive"
                       onClick={() => {
                         if (confirm("Are you sure you want to delete this record?")) {
@@ -348,7 +348,7 @@ const StudentDashboard = () => {
                       className='ml-2'
                     >
                       Delete
-                    </Button>
+                    </Button> */}
                   </TableCell>
                 </TableRow>
               ))}
