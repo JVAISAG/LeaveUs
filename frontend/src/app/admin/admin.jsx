@@ -347,6 +347,8 @@ const handleSelectChange = (value, fieldName) => {
                     <SelectItem value="Pending">Pending</SelectItem>
                     <SelectItem value="AdvisorApproved">Advisor Approved</SelectItem>
                     <SelectItem value="WardenApproved">Warden Approved</SelectItem>
+                    <SelectItem value="Accepted">Accepted</SelectItem>
+
                     <SelectItem value="Rejected">Rejected</SelectItem>
                   </SelectContent>
                 </Select>
