@@ -381,7 +381,7 @@ const handleSelectChange = (value, fieldName) => {
                 currentRecords.length > 0 ? (
                   currentRecords.map((record) => (
                     <TableRow key={record._id}>
-                      <TableCell>{record._id}</TableCell>
+                      <TableCell>{record.rollNo}</TableCell>
                       <TableCell>{record.studentId}</TableCell>
                       <TableCell>{record.student.name}</TableCell>
                       <TableCell>{record.student.rollNo.slice(4, 7)}</TableCell>
