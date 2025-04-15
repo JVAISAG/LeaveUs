@@ -140,7 +140,7 @@ export default function AdminDashboardPage() {
       result = result.filter(record => 
         record.studentId.toLowerCase().includes(query) ||
         // record.studentName.toLowerCase().includes(query) ||
-        record.rollNo.toLowerCase().includes(query) ||
+        record.rollNo.includes(query) ||
         record.reason.toLowerCase().includes(query)
       );
     }
