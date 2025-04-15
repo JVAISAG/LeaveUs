@@ -17,6 +17,7 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import axios from "axios";
 import AddForm from './Addform'
 import { fetchData } from "next-auth/client/_utils";
+import { toast } from "sonner";
 const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   // State for form data
   const [formData, setFormData] = useState({
@@ -201,79 +202,85 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
   }
   // Handle form submission
   const handleSubmit = async () => {
-    let dataToSend;
-        console.log("Entering")
-        const commonFields = {
-            name: formData.name,
-            email: formData.email,
-            passwordHash: formData.password, // Assuming both need passwords
+    try{
+      let dataToSend;
+      console.log("Entering")
+      const commonFields = {
+          name: formData.name,
+          email: formData.email,
+          passwordHash: formData.password, // Assuming both need passwords
+        };
+        
+        if (directoryMode === "students") {
+          // Student-specific data structure
+          dataToSend = {
+            ...commonFields,
+          rollNo: formData.rollNo,
+          contactNumber: formData.contactNumber,
+          facultyAdvisor : formData.faculty,
+
+            // year: formData.year,
+            hostelId: formData.hostelId,
+            RoomNo: formData.room,
+             parentEmail: formData.parentEmail,
+            parentPhone: formData.parentContact,
+            // address: formData.address,
+            // Any other student-specific fields  
           };
-          
-          if (directoryMode === "students") {
-            // Student-specific data structure
-            dataToSend = {
-              ...commonFields,
-            rollNo: formData.rollNo,
-            contactNumber: formData.contactNumber,
-            facultyAdvisor : formData.faculty,
+        } else {
+          // Faculty-specific data structure
+          dataToSend = {
+            ...commonFields,
+            designation: formData.designation,
+          department: formData.department,
+          isHOD : formData.department?true : false,
+          isDEAN : false,
 
-              // year: formData.year,
-              hostelId: formData.hostelId,
-              RoomNo: formData.room,
-               parentEmail: formData.parentEmail,
-              parentPhone: formData.parentContact,
-              // address: formData.address,
-              // Any other student-specific fields  
-            };
-          } else {
-            // Faculty-specific data structure
-            dataToSend = {
-              ...commonFields,
-              designation: formData.designation,
-            department: formData.department,
-            isHOD : formData.department?true : false,
-            isDEAN : formData.department?true : false,
+          //   joiningYear: formData.joiningYear,
+          //   office: formData.office,
+          //   specialization: formData.specialization,
+            // Any other faculty-specific fields
+          };
+        }
+  // Validate form
+  const formErrors = validateForm();
+  
+  // If there are errors, display them and stop submission
+  if (Object.keys(formErrors).length > 0) {
+    setErrors(formErrors);
+    console.log("Errors : ",formErrors)
+    return;
+  }
+  
+  // Submit the form if no errors
+  console.log("Form submitted:", formData);
+  await newPerson(dataToSend)
+  
+  // Reset form after submission
+  setFormData({
+    name: "",
+    rollNo: "",
+    department: "",
+    email: "",
+    contactNumber: "",
+    year: "",
+    hostelId: "",
+    room: "",
+    parentEmail: "",
+    parentContact: "",
+    address: "",
+    designation: "",
+  //   joiningYear: "",
+  //   office: "",
+    specialization: ""
+  });
 
-            //   joiningYear: formData.joiningYear,
-            //   office: formData.office,
-            //   specialization: formData.specialization,
-              // Any other faculty-specific fields
-            };
-          }
-    // Validate form
-    const formErrors = validateForm();
-    
-    // If there are errors, display them and stop submission
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      console.log("Errors : ",formErrors)
-      return;
+  toast(`${directoryMode} created successfully`)
     }
-    
-    // Submit the form if no errors
-    console.log("Form submitted:", formData);
-    await newPerson(dataToSend)
-    
-    // Reset form after submission
-    setFormData({
-      name: "",
-      rollNo: "",
-      department: "",
-      email: "",
-      contactNumber: "",
-      year: "",
-      hostelId: "",
-      room: "",
-      parentEmail: "",
-      parentContact: "",
-      address: "",
-      designation: "",
-    //   joiningYear: "",
-    //   office: "",
-      specialization: ""
-    });
-
-  };
+    catch(e){
+      toast(`Error creating ${directoryMode}`)
+    }
+    };
   const [facultyId,setfacultyId] = useState({})
   const [allFaculty,setAllFaculty] = useState([])
   const [allHostel,setAllHostel] = useState([])
@@ -382,7 +389,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 type="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="e.g. 2020" 
+                placeholder="enter password" 
                 className={errors.password ? "border-red-500" : ""}
               />
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
@@ -397,7 +404,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 type="password" 
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="e.g. CSE Building, Room 101" 
+                placeholder="confirm password" 
                 className={errors.confirmPassword ? "border-red-500" : ""}
               />
               {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
@@ -473,7 +480,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
             </div>
             
             <div>
-              <label htmlFor="parentName" className="block text-sm font-medium mb-1">
+              <label htmlFor="parentEmail" className="block text-sm font-medium mb-1">
                 Parent Email <span className="text-red-500">*</span>
               </label>
               <Input 
@@ -481,7 +488,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
                 type='email'
                 value={formData.parentEmail}
                 onChange={handleInputChange}
-                placeholder="Enter parent name" 
+                placeholder="Enter parent email" 
                 className={errors.parentEmail ? "border-red-500" : ""}
               />
               {errors.parentEmail && <p className="text-red-500 text-xs mt-1">{errors.parentEmail}</p>}

@@ -88,8 +88,8 @@ const StudentDashboard = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      LeavingDate: new Date(),
-      ReportingDate: new Date(),
+      LeavingDate: null,
+      ReportingDate: null,
       Name: "",
       HostelName: "",
       RollNumber: "",
@@ -517,6 +517,7 @@ const LeaveForm = ({ isFormOpen, changeFormState, form, onSubmit, isSubmitting, 
                           onSelect={field.onChange}
                           initialFocus
                           className="rounded-md border-0"
+                          fromDate={new Date(form.LeavingDate)}
                         />
                       </PopoverContent>
                     </Popover>

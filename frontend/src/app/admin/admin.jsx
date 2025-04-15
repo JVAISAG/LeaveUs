@@ -164,11 +164,11 @@ export default function AdminDashboardPage() {
     if (directorySearchQuery) {
       const query = directorySearchQuery.toLowerCase();
       studentResult = studentResult.filter(student => 
-        student.id.toLowerCase().includes(query) ||
+        student.rollNo.toLowerCase().includes(query) ||
         student.name.toLowerCase().includes(query) ||
-        student.department.toLowerCase().includes(query) ||
+        // student.department.toLowerCase().includes(query) ||
         student.email.toLowerCase().includes(query) ||
-        student.mobile.includes(query)
+        student.contactNumber.includes(query)
       );
       
       facultyResult = facultyResult.filter(faculty => 
@@ -319,7 +319,7 @@ const handleSelectChange = (value, fieldName) => {
                 <Filter size={16} />
                 Filters
               </Button>
-              <Button variant="outline" onClick={() => window.location.reload()}>🔄 Refresh</Button>
+              {/* <Button variant="outline" onClick={() => window.location.reload()}>🔄 Refresh</Button> */}
             </div>
           </div>
 
@@ -335,9 +335,9 @@ const handleSelectChange = (value, fieldName) => {
                   <SelectContent>
                     <SelectItem value="All">All</SelectItem>
                     <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Approved">Approved</SelectItem>
+                    <SelectItem value="AdvisorApproved">Advisor Approved</SelectItem>
+                    <SelectItem value="WardenApproved">Warden Approved</SelectItem>
                     <SelectItem value="Rejected">Rejected</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -621,7 +621,7 @@ const handleSelectChange = (value, fieldName) => {
               <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
             </div>
             
-            <div>
+            {/* <div>
               <Select value={directoryFilter} onValueChange={setDirectoryFilter}>
                 <SelectTrigger className="w-44">
                   <SelectValue placeholder="Department" />
@@ -631,11 +631,11 @@ const handleSelectChange = (value, fieldName) => {
                   <SelectItem value="CSE">CSE</SelectItem>
                   <SelectItem value="CSY">CSY</SelectItem>
                   <SelectItem value="CD">CD</SelectItem>
-                  {/* <SelectItem value="Civil">Civil</SelectItem> */}
+                  
                   <SelectItem value="ECE">ECE</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </div>
           
           {/* Directory Table */}
