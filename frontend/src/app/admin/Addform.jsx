@@ -339,7 +339,7 @@ const DirectoryForm = ({ directoryMode, onAddPerson }) => {
               <SelectItem value="CSE">CSE</SelectItem>
               <SelectItem value="CSY">CSY</SelectItem>
               <SelectItem value="ECE">ECE</SelectItem>
-              <SelectItem value="CD">Data Science</SelectItem>
+              <SelectItem value="CD">CD</SelectItem>
             </SelectContent>
           </Select>
           {errors.department && <p className="text-red-500 text-xs mt-1">{errors.department}</p>}
