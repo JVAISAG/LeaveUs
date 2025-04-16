@@ -60,8 +60,13 @@ router.post("/new", async (request, response) => {
 
     let start = new Date(request.body.startDate);
     let end = new Date(request.body.endDate);
-    let workingDays = 0;
 
+    if (start > end) {
+      return response.status(400).json({ message: "Invalid date range" });
+    }
+
+    let workingDays = 0;
+    
     while (start <= end) {
         let day = start.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
         if (day !== 0 && day !== 6) { // Exclude Sundays (0) and Saturdays (6)
@@ -71,9 +76,6 @@ router.post("/new", async (request, response) => {
     }
 
     request.body.workingdays = workingDays;
-    if (request.body.workingdays < 0) {
-      return response.status(400).json({ message: "Invalid date range" });
-    }
 
     // const hostelname = request.body.hostelName;
 
@@ -295,6 +297,7 @@ router.post("/:id/reject", async (request, response) => {
     }
 
     const leave = await Leave.findById(id);
+    const nextApproverRole = leave.nextApproverRole;
     if (!leave) {
       return response.status(404).json({ message: "Leave not found" });
     }
